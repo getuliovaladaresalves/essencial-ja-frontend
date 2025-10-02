@@ -375,6 +375,21 @@ const Index = () => {
     endereco: '',
   });
 
+  // Estados para fluxo de contratação
+  const [fluxoEtapa, setFluxoEtapa] = useState<'nenhum' | 'confirmacao' | 'aguardando' | 'rastreamento'>('nenhum');
+  const [prestadorContratado, setPrestadorContratado] = useState<Provider | null>(null);
+  const [detalhesAdicionais, setDetalhesAdicionais] = useState('');
+
+  // Simulação do processamento
+  useEffect(() => {
+    if (fluxoEtapa === 'aguardando') {
+      const timer = setTimeout(() => {
+        setFluxoEtapa('rastreamento');
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [fluxoEtapa]);
 
   // Lógica de filtro e ordenação
   const filteredAndSortedProviders = useMemo(() => {
@@ -1346,13 +1361,163 @@ const Index = () => {
           </div>
 
           {/* Botão de Ação */}
-          <button className="w-full bg-primary hover:bg-primary-hover text-primary-foreground py-4 rounded-lg font-bold text-lg transition-colors">
+          <button 
+            onClick={() => {
+              setPrestadorContratado(selectedProvider);
+              setFluxoEtapa('confirmacao');
+              setIsProviderModalOpen(false);
+            }}
+            className="w-full bg-primary hover:bg-primary-hover text-primary-foreground py-4 rounded-lg font-bold text-lg transition-colors"
+          >
             Contratar Serviço
           </button>
         </div>
       </div>
     </div>
   );
+
+  // Modal de Confirmação do Fluxo
+  const ModalConfirmacao = () => {
+    if (fluxoEtapa !== 'confirmacao' || !prestadorContratado) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-background rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="p-6">
+            <h2 className="text-2xl font-bold text-foreground mb-4">Confirmar Serviço</h2>
+            
+            {/* Resumo do Serviço */}
+            <div className="bg-muted/50 rounded-lg p-4 mb-6">
+              <div className="flex items-center gap-3 mb-3">
+                <img 
+                  src={prestadorContratado.foto} 
+                  alt={prestadorContratado.nome}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <h3 className="font-semibold text-foreground">{prestadorContratado.nome}</h3>
+                  <p className="text-sm text-muted-foreground">{prestadorContratado.categoria}</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Confirmar chamado para <strong>{prestadorContratado.nome}</strong>
+              </p>
+            </div>
+
+            {/* Campo de Detalhes */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Adicionar detalhes (opcional)
+              </label>
+              <textarea
+                value={detalhesAdicionais}
+                onChange={(e) => setDetalhesAdicionais(e.target.value)}
+                placeholder="Descreva o problema ou serviço necessário..."
+                className="w-full p-3 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary resize-none"
+                rows={3}
+              />
+            </div>
+
+            {/* Seção de Pagamento */}
+            <div className="bg-muted/30 rounded-lg p-4 mb-6">
+              <h4 className="font-semibold text-foreground mb-2">Pagamento</h4>
+              <div className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faCreditCard} className="text-primary" />
+                <span className="text-sm text-muted-foreground">Pagamento com Visa **** 1234</span>
+              </div>
+            </div>
+
+            {/* Botões */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setFluxoEtapa('nenhum')}
+                className="flex-1 px-4 py-3 border border-border text-foreground rounded-lg hover:bg-muted transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => setFluxoEtapa('aguardando')}
+                className="flex-1 px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover transition-colors font-semibold"
+              >
+                Confirmar e Chamar Agora
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Tela de Aguardando
+  const TelaAguardando = () => {
+    if (fluxoEtapa !== 'aguardando') return null;
+
+    return (
+      <div className="fixed inset-0 bg-background flex items-center justify-center z-50">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <h2 className="text-2xl font-bold text-foreground mb-2">A confirmar o seu pedido...</h2>
+          <p className="text-muted-foreground">Por favor, aguarde um momento</p>
+        </div>
+      </div>
+    );
+  };
+
+  // Tela de Rastreamento
+  const TelaRastreamento = () => {
+    if (fluxoEtapa !== 'rastreamento' || !prestadorContratado) return null;
+
+    return (
+      <div className="fixed inset-0 bg-background z-50 flex flex-col">
+        {/* Header */}
+        <div className="bg-card border-b border-border p-4">
+          <div className="flex items-center gap-3">
+            <img 
+              src={prestadorContratado.foto} 
+              alt={prestadorContratado.nome}
+              className="w-12 h-12 rounded-full object-cover"
+            />
+            <div>
+              <h2 className="font-bold text-foreground">{prestadorContratado.nome}</h2>
+              <p className="text-sm text-muted-foreground">A caminho</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Mapa Simulado */}
+        <div className="flex-1 bg-muted/30 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-32 h-32 bg-primary/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
+              <FontAwesomeIcon icon={faMapMarkerAlt} className="text-4xl text-primary" />
+            </div>
+            <p className="text-muted-foreground">Mapa de rastreamento em tempo real</p>
+          </div>
+        </div>
+
+        {/* Status */}
+        <div className="bg-success/10 border-t border-success/20 p-4">
+          <div className="flex items-center gap-2 text-success">
+            <FontAwesomeIcon icon={faCheckCircle} />
+            <span className="font-semibold">O prestador está a caminho!</span>
+          </div>
+        </div>
+
+        {/* Botão Cancelar */}
+        <div className="p-4 border-t border-border">
+          <button
+            onClick={() => {
+              setFluxoEtapa('nenhum');
+              setPrestadorContratado(null);
+              setDetalhesAdicionais('');
+            }}
+            className="w-full px-4 py-3 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors font-semibold"
+          >
+            Cancelar Chamado
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background font-poppins">
@@ -1745,6 +1910,11 @@ const Index = () => {
       
       {/* Modal de Login de Cliente */}
       <CustomerLoginModal />
+      
+      {/* Componentes do Fluxo de Contratação */}
+      <ModalConfirmacao />
+      <TelaAguardando />
+      <TelaRastreamento />
     </div>
   );
 };
