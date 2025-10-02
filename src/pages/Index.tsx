@@ -269,14 +269,22 @@ const Index = () => {
   // Estado para cabeçalho mobile
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Detectar scroll para cabeçalho mobile
+  // Detectar scroll para cabeçalho mobile com throttling
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      setIsScrolled(scrollTop > 100);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollTop = window.scrollY;
+          setIsScrolled(scrollTop > 80);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -438,15 +446,9 @@ const Index = () => {
         isSelected ? 'border-primary' : 'border-transparent'
       } ${provider.parceiroPro ? 'relative ring-2 ring-yellow-400/20 bg-gradient-to-br from-yellow-50/30 to-orange-50/30 shadow-lg shadow-yellow-400/10' : ''}`}
     >
-      {provider.parceiroPro && (
-        <div className="absolute top-2 right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full z-20 flex items-center gap-1.5 shadow-lg">
-          <FontAwesomeIcon icon={faCrown} className="text-xs" />
-          <span className="text-xs font-bold">PARCEIRO PRO</span>
-        </div>
-      )}
       
       {/* Container Principal com Flexbox */}
-      <div className={`flex items-start space-x-4 p-4 ${provider.parceiroPro ? 'pt-6' : ''}`}>
+      <div className="flex items-start space-x-4 p-4">
         {/* Coluna da Imagem */}
         <div className="flex-shrink-0">
           <img
@@ -1479,8 +1481,10 @@ const Index = () => {
       {/* Layout Mobile */}
       <div className="md:hidden min-h-screen pb-24">
         {/* Header Mobile Moderno */}
-        <header className={`bg-gradient-to-r from-primary/10 to-secondary/10 shadow-lg border-b border-border sticky top-0 z-20 transition-all duration-300 ${
-          isScrolled ? 'py-2' : 'py-0'
+        <header className={`sticky top-0 z-20 transition-all duration-300 ${
+          isScrolled 
+            ? 'bg-background shadow-lg border-b border-border py-2' 
+            : 'bg-gradient-to-r from-primary/10 to-secondary/10 shadow-lg border-b border-border py-0'
         }`}>
           {/* Versão Normal do Header */}
           {!isScrolled && (
@@ -1554,34 +1558,34 @@ const Index = () => {
                         className="p-2 text-muted-foreground hover:text-primary transition-colors"
                         title="Entrar"
                       >
-                        <FontAwesomeIcon icon={faSignInAlt} />
+                        <FontAwesomeIcon icon={faSignInAlt} className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => setIsCustomerCadastroOpen(true)}
                         className="p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary-hover transition-colors"
                         title="Criar Conta"
                       >
-                        <FontAwesomeIcon icon={faUserPlus} />
+                        <FontAwesomeIcon icon={faUserPlus} className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => setIsLoginOpen(true)}
                         className="p-2 text-primary hover:text-primary-hover transition-colors"
                         title="Sou Prestador"
                       >
-                        <FontAwesomeIcon icon={faBuilding} />
+                        <FontAwesomeIcon icon={faBuilding} className="w-4 h-4" />
                       </button>
                     </>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                        <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-sm" />
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center overflow-hidden">
+                        <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-sm w-4 h-4" />
                       </div>
                       <button 
                         onClick={handleLogout}
                         className="p-2 text-muted-foreground hover:text-foreground transition-colors"
                         title="Sair"
                       >
-                        <FontAwesomeIcon icon={faSignOutAlt} />
+                        <FontAwesomeIcon icon={faSignOutAlt} className="w-4 h-4" />
                       </button>
                     </div>
                   )}
@@ -1591,7 +1595,7 @@ const Index = () => {
                     className="p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive/20 transition-colors"
                     title="Emergência"
                   >
-                    <FontAwesomeIcon icon={faPhone} />
+                    <FontAwesomeIcon icon={faPhone} className="w-4 h-4" />
                   </button>
                 </div>
               </div>
