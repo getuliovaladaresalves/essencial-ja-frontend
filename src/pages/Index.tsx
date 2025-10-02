@@ -16,6 +16,10 @@ import {
   faJugDetergent,
   faShirt,
   faMapMarkerAlt,
+  faUser,
+  faEnvelope,
+  faBuilding,
+  faCheck,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Importação das imagens geradas
@@ -24,6 +28,13 @@ import provider2 from '@/assets/provider-2.jpg';
 import provider3 from '@/assets/provider-3.jpg';
 import provider4 from '@/assets/provider-4.jpg';
 import provider5 from '@/assets/provider-5.jpg';
+
+// Importação dos componentes de UI
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 // Interface para o tipo de Prestador
 interface Provider {
@@ -196,6 +207,21 @@ const Index = () => {
   });
   const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'distance'>('relevance');
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
+  
+  // Estado do modal de cadastro
+  const [isCadastroOpen, setIsCadastroOpen] = useState(false);
+  const [cadastroData, setCadastroData] = useState({
+    nome: '',
+    email: '',
+    telefone: '',
+    categoria: '',
+    endereco: '',
+    descricao: '',
+    horarioFuncionamento: '',
+    precoBase: '',
+    experiencia: '',
+    certificacoes: '',
+  });
 
   // Lógica de filtro e ordenação
   const filteredAndSortedProviders = useMemo(() => {
@@ -242,6 +268,32 @@ const Index = () => {
 
   const handleSOSClick = () => {
     alert('🚨 SOS EMERGÊNCIA ACIONADO!\n\nNosso time está sendo notificado e entrará em contato em instantes.');
+  };
+
+  // Funções para o formulário de cadastro
+  const handleCadastroSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Aqui você pode adicionar a lógica para enviar os dados
+    console.log('Dados do cadastro:', cadastroData);
+    alert('✅ Cadastro realizado com sucesso!\n\nEm breve nossa equipe entrará em contato para finalizar o processo.');
+    setIsCadastroOpen(false);
+    // Limpar formulário
+    setCadastroData({
+      nome: '',
+      email: '',
+      telefone: '',
+      categoria: '',
+      endereco: '',
+      descricao: '',
+      horarioFuncionamento: '',
+      precoBase: '',
+      experiencia: '',
+      certificacoes: '',
+    });
+  };
+
+  const handleCadastroChange = (field: string, value: string) => {
+    setCadastroData(prev => ({ ...prev, [field]: value }));
   };
 
   // Componente do Card de Prestador
@@ -313,6 +365,198 @@ const Index = () => {
         </div>
       </div>
     </div>
+  );
+
+  // Modal de Cadastro de Prestador
+  const CadastroModal = () => (
+    <Dialog open={isCadastroOpen} onOpenChange={setIsCadastroOpen}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-2xl">
+            <FontAwesomeIcon icon={faUser} className="text-primary" />
+            Cadastre-se como Prestador
+          </DialogTitle>
+          <DialogDescription>
+            Preencha o formulário abaixo para se tornar um prestador de serviços em nossa plataforma.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <form onSubmit={handleCadastroSubmit} className="space-y-6">
+          {/* Informações Pessoais */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+              <FontAwesomeIcon icon={faUser} className="text-primary" />
+              Informações Pessoais
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Nome Completo *
+                </label>
+                <Input
+                  type="text"
+                  value={cadastroData.nome}
+                  onChange={(e) => handleCadastroChange('nome', e.target.value)}
+                  placeholder="Seu nome completo"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  E-mail *
+                </label>
+                <Input
+                  type="email"
+                  value={cadastroData.email}
+                  onChange={(e) => handleCadastroChange('email', e.target.value)}
+                  placeholder="seu@email.com"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Telefone/WhatsApp *
+                </label>
+                <Input
+                  type="tel"
+                  value={cadastroData.telefone}
+                  onChange={(e) => handleCadastroChange('telefone', e.target.value)}
+                  placeholder="(31) 99999-9999"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Categoria de Serviço *
+                </label>
+                <Select value={cadastroData.categoria} onValueChange={(value) => handleCadastroChange('categoria', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione sua categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="borracharia">Borracharia</SelectItem>
+                    <SelectItem value="chaveiro">Chaveiro</SelectItem>
+                    <SelectItem value="eletricista">Eletricista</SelectItem>
+                    <SelectItem value="encanador">Encanador</SelectItem>
+                    <SelectItem value="gas">Água/Gás</SelectItem>
+                    <SelectItem value="lavanderia">Lavanderia</SelectItem>
+                    <SelectItem value="outros">Outros</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Informações Profissionais */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+              <FontAwesomeIcon icon={faBuilding} className="text-primary" />
+              Informações Profissionais
+            </h3>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Endereço de Atendimento *
+              </label>
+              <Input
+                type="text"
+                value={cadastroData.endereco}
+                onChange={(e) => handleCadastroChange('endereco', e.target.value)}
+                placeholder="Rua, número, bairro, cidade - UF"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Descrição dos Serviços *
+              </label>
+              <Textarea
+                value={cadastroData.descricao}
+                onChange={(e) => handleCadastroChange('descricao', e.target.value)}
+                placeholder="Descreva os serviços que você oferece..."
+                className="min-h-[100px]"
+                required
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Horário de Funcionamento *
+                </label>
+                <Input
+                  type="text"
+                  value={cadastroData.horarioFuncionamento}
+                  onChange={(e) => handleCadastroChange('horarioFuncionamento', e.target.value)}
+                  placeholder="Ex: 8h às 18h, Seg-Sex"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Preço Base (opcional)
+                </label>
+                <Input
+                  type="text"
+                  value={cadastroData.precoBase}
+                  onChange={(e) => handleCadastroChange('precoBase', e.target.value)}
+                  placeholder="Ex: A partir de R$ 50"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Experiência Profissional
+              </label>
+              <Textarea
+                value={cadastroData.experiencia}
+                onChange={(e) => handleCadastroChange('experiencia', e.target.value)}
+                placeholder="Conte-nos sobre sua experiência na área..."
+                className="min-h-[80px]"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Certificações e Qualificações
+              </label>
+              <Textarea
+                value={cadastroData.certificacoes}
+                onChange={(e) => handleCadastroChange('certificacoes', e.target.value)}
+                placeholder="Mencione certificações, cursos, especializações..."
+                className="min-h-[80px]"
+              />
+            </div>
+          </div>
+
+          {/* Botões */}
+          <div className="flex gap-4 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsCadastroOpen(false)}
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1 bg-primary hover:bg-primary-hover"
+            >
+              <FontAwesomeIcon icon={faCheck} className="mr-2" />
+              Cadastrar-se
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 
   // Modal de Detalhes do Prestador
@@ -457,7 +701,10 @@ const Index = () => {
                 <button className="text-sm text-primary hover:text-primary-hover transition-colors">
                   Entrar
                 </button>
-                <button className="px-4 py-1 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary-hover transition-colors">
+                <button 
+                  onClick={() => setIsCadastroOpen(true)}
+                  className="px-4 py-1 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary-hover transition-colors"
+                >
                   Cadastre-se
                 </button>
               </div>
@@ -705,6 +952,9 @@ const Index = () => {
 
       {/* Modal de Detalhes */}
       {selectedProvider && <ProviderModal provider={selectedProvider} />}
+      
+      {/* Modal de Cadastro */}
+      <CadastroModal />
     </div>
   );
 };
