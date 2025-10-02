@@ -2,20 +2,30 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "src": "api/auth/[...action].ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/prestadores/[...params].ts",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "src": "/api/auth/(.*)",
+      "dest": "/api/auth/[...action].ts"
+    },
+    {
+      "src": "/api/prestadores/(.*)",
+      "dest": "/api/prestadores/[...params].ts"
     }
   ],
-  "env": {
-    "REACT_APP_API_URL": "@react_app_api_url"
+  "functions": {
+    "api/auth/[...action].ts": {
+      "maxDuration": 30
+    },
+    "api/prestadores/[...params].ts": {
+      "maxDuration": 30
+    }
   }
 }
