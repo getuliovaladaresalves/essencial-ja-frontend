@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Logo from '@/components/Logo';
 import {
@@ -1520,6 +1520,15 @@ const Index = () => {
       </div>
     );
   };
+
+  // Renderização condicional baseada no fluxo
+  if (fluxoEtapa === 'rastreamento') {
+    return <TelaRastreamento />;
+  }
+
+  if (fluxoEtapa === 'aguardando') {
+    return <TelaAguardando />;
+  }
 
   return (
     <div className="min-h-screen bg-background font-poppins">
