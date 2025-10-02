@@ -155,6 +155,24 @@ const mockData: Provider[] = [
       urlMapaEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.218323681949!2d-43.93982838508587!3d-19.91524398661036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa6999e0d0e8389%3A0x155b3833b0e8b6b5!2sPra%C3%A7a%20Sete%20de%20Setembro!5e0!3m2!1spt-BR!2sbr!4v1696185611335!5m2!1spt-BR!2sbr'
     },
   },
+  {
+    id: 7,
+    nome: 'Borrachari de Getulio',
+    categoria: 'borracharia',
+    foto: provider2,
+    avaliacao: 4.8,
+    distancia: 2.3,
+    tempoChegada: '20-35 min',
+    preco: 'A partir de R$ 100',
+    seloEssencial: true,
+    aberto24h: true,
+    parceiroPro: true,
+    descricao: 'Especialista em conserto de pneus, alinhamento, balanceamento e serviços automotivos. Atendimento 24h com qualidade garantida.',
+    endereco: {
+      texto: 'Av. Getúlio Vargas, 1500 - Centro, Belo Horizonte - MG',
+      urlMapaEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.218323681949!2d-43.93982838508587!3d-19.91524398661036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa6999e0d0e8389%3A0x155b3833b0e8b6b5!2sPra%C3%A7a%20Sete%20de%20Setembro!5e0!3m2!1spt-BR!2sbr!4v1696185611335!5m2!1spt-BR!2sbr'
+    },
+  },
 ];
 
 // Categorias rápidas
