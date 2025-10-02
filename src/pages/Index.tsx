@@ -25,6 +25,13 @@ import {
   faExclamationTriangle,
   faFire,
   faWrench,
+  faUserPlus,
+  faShoppingCart,
+  faHeart,
+  faBell,
+  faCog,
+  faSignOutAlt,
+  faBars,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Importação das imagens geradas
@@ -239,6 +246,26 @@ const Index = () => {
   const [isEmergenciaOpen, setIsEmergenciaOpen] = useState(false);
   const [categoriaEmergencia, setCategoriaEmergencia] = useState<string | null>(null);
 
+  // Estados de usuário
+  const [userType, setUserType] = useState<'guest' | 'customer' | 'provider'>('guest');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState({
+    nome: '',
+    email: '',
+    tipo: 'customer' as 'customer' | 'provider',
+    avatar: '',
+  });
+
+  // Estados para modais de usuário final
+  const [isCustomerCadastroOpen, setIsCustomerCadastroOpen] = useState(false);
+  const [isCustomerLoginOpen, setIsCustomerLoginOpen] = useState(false);
+  const [customerData, setCustomerData] = useState({
+    nome: '',
+    email: '',
+    telefone: '',
+    endereco: '',
+  });
+
   // Lógica de filtro e ordenação
   const filteredAndSortedProviders = useMemo(() => {
     let result = [...mockData];
@@ -345,6 +372,48 @@ const Index = () => {
 
   const handleLoginChange = (field: string, value: string) => {
     setLoginData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Funções para usuários finais
+  const handleCustomerCadastroSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Cadastro de cliente:', customerData);
+    alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essenciais Já!');
+    setIsCustomerCadastroOpen(false);
+    setIsLoggedIn(true);
+    setUserType('customer');
+    setUserData({
+      nome: customerData.nome,
+      email: customerData.email,
+      tipo: 'customer',
+      avatar: '',
+    });
+    setCustomerData({ nome: '', email: '', telefone: '', endereco: '' });
+  };
+
+  const handleCustomerLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Login de cliente:', customerData);
+    alert('✅ Login realizado com sucesso!\n\nBem-vindo de volta!');
+    setIsCustomerLoginOpen(false);
+    setIsLoggedIn(true);
+    setUserType('customer');
+    setUserData({
+      nome: customerData.nome,
+      email: customerData.email,
+      tipo: 'customer',
+      avatar: '',
+    });
+  };
+
+  const handleCustomerChange = (field: string, value: string) => {
+    setCustomerData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserType('guest');
+    setUserData({ nome: '', email: '', tipo: 'customer', avatar: '' });
   };
 
   // Componente do Card de Prestador
@@ -847,6 +916,196 @@ const Index = () => {
     </Dialog>
   );
 
+  // Modal de Cadastro de Cliente
+  const CustomerCadastroModal = () => (
+    <Dialog open={isCustomerCadastroOpen} onOpenChange={setIsCustomerCadastroOpen}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-2xl">
+            <FontAwesomeIcon icon={faUserPlus} className="text-primary" />
+            Criar Conta
+          </DialogTitle>
+          <DialogDescription>
+            Cadastre-se para contratar serviços e ter acesso a recursos exclusivos.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <form onSubmit={handleCustomerCadastroSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Nome Completo *
+            </label>
+            <Input
+              type="text"
+              value={customerData.nome}
+              onChange={(e) => handleCustomerChange('nome', e.target.value)}
+              placeholder="Seu nome completo"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              E-mail *
+            </label>
+            <Input
+              type="email"
+              value={customerData.email}
+              onChange={(e) => handleCustomerChange('email', e.target.value)}
+              placeholder="seu@email.com"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Telefone *
+            </label>
+            <Input
+              type="tel"
+              value={customerData.telefone}
+              onChange={(e) => handleCustomerChange('telefone', e.target.value)}
+              placeholder="(31) 99999-9999"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Endereço *
+            </label>
+            <Input
+              type="text"
+              value={customerData.endereco}
+              onChange={(e) => handleCustomerChange('endereco', e.target.value)}
+              placeholder="Rua, número, bairro, cidade"
+              required
+            />
+          </div>
+
+          <div className="text-center space-y-2">
+            <div className="text-sm text-muted-foreground">
+              Já tem uma conta?{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCustomerCadastroOpen(false);
+                  setIsCustomerLoginOpen(true);
+                }}
+                className="text-primary hover:text-primary-hover transition-colors font-medium"
+              >
+                Entrar aqui
+              </button>
+            </div>
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsCustomerCadastroOpen(false)}
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1 bg-primary hover:bg-primary-hover"
+            >
+              <FontAwesomeIcon icon={faUserPlus} className="mr-2" />
+              Criar Conta
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+
+  // Modal de Login de Cliente
+  const CustomerLoginModal = () => (
+    <Dialog open={isCustomerLoginOpen} onOpenChange={setIsCustomerLoginOpen}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-2xl">
+            <FontAwesomeIcon icon={faSignInAlt} className="text-primary" />
+            Entrar
+          </DialogTitle>
+          <DialogDescription>
+            Acesse sua conta para contratar serviços e acompanhar pedidos.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <form onSubmit={handleCustomerLoginSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              E-mail *
+            </label>
+            <Input
+              type="email"
+              value={customerData.email}
+              onChange={(e) => handleCustomerChange('email', e.target.value)}
+              placeholder="seu@email.com"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Senha *
+            </label>
+            <Input
+              type="password"
+              value={customerData.telefone}
+              onChange={(e) => handleCustomerChange('telefone', e.target.value)}
+              placeholder="Sua senha"
+              required
+            />
+          </div>
+
+          <div className="text-center space-y-2">
+            <button
+              type="button"
+              className="text-sm text-primary hover:text-primary-hover transition-colors"
+            >
+              Esqueci minha senha
+            </button>
+            <div className="text-sm text-muted-foreground">
+              Não tem uma conta?{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCustomerLoginOpen(false);
+                  setIsCustomerCadastroOpen(true);
+                }}
+                className="text-primary hover:text-primary-hover transition-colors font-medium"
+              >
+                Cadastre-se aqui
+              </button>
+            </div>
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsCustomerLoginOpen(false)}
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1 bg-primary hover:bg-primary-hover"
+            >
+              <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
+              Entrar
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+
   // Modal de Detalhes do Prestador
   const ProviderModal = ({ provider }: { provider: Provider }) => (
     <div
@@ -978,65 +1237,117 @@ const Index = () => {
       <div className="hidden md:flex h-screen flex-col">
         {/* Header Desktop */}
         <header className="bg-card shadow-lg z-20 border-b border-border">
-          {/* Área de Registro */}
-          <div className="bg-primary/5 border-b border-primary/10">
-            <div className="container mx-auto px-6 py-2 flex justify-between items-center">
-              <div className="flex items-center gap-2 text-sm text-primary">
-                <FontAwesomeIcon icon={faShield} className="text-primary" />
-                <span>Seja um prestador de serviços</span>
-              </div>
+          {/* Área de Registro Moderna */}
+          <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-primary/10">
+            <div className="container mx-auto px-6 py-3 flex justify-between items-center">
               <div className="flex items-center gap-4">
-                <button 
-                  onClick={() => setIsLoginOpen(true)}
-                  className="text-sm text-primary hover:text-primary-hover transition-colors"
-                >
-                  Entrar
-                </button>
-                <button 
-                  onClick={() => setIsCadastroOpen(true)}
-                  className="px-4 py-1 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary-hover transition-colors"
-                >
-                  Cadastre-se
-                </button>
+                <div className="flex items-center gap-2 text-sm text-primary">
+                  <FontAwesomeIcon icon={faShield} className="text-primary" />
+                  <span>Plataforma confiável de serviços essenciais</span>
+                </div>
+              </div>
+              
+              {/* Navegação de Usuário */}
+              <div className="flex items-center gap-4">
+                {!isLoggedIn ? (
+                  <>
+                    <button 
+                      onClick={() => setIsCustomerLoginOpen(true)}
+                      className="text-sm text-foreground hover:text-primary transition-colors font-medium"
+                    >
+                      Entrar
+                    </button>
+                    <button 
+                      onClick={() => setIsCustomerCadastroOpen(true)}
+                      className="px-4 py-1.5 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary-hover transition-colors font-medium"
+                    >
+                      Criar Conta
+                    </button>
+                    <div className="h-4 w-px bg-border"></div>
+                    <button 
+                      onClick={() => setIsLoginOpen(true)}
+                      className="text-sm text-primary hover:text-primary-hover transition-colors font-medium"
+                    >
+                      Sou Prestador
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                        <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-sm" />
+                      </div>
+                      <span className="text-sm font-medium text-foreground">{userData.nome}</span>
+                    </div>
+                    <button 
+                      onClick={handleLogout}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <FontAwesomeIcon icon={faSignOutAlt} className="mr-1" />
+                      Sair
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
           {/* Barra Principal */}
-          <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div className="flex items-center gap-8">
-            <h1 className="text-3xl font-bold text-primary">Essenciais Já</h1>
-
-            {/* Barra de busca Desktop */}
-              <div className="relative w-[400px]">
-              <FontAwesomeIcon
-                icon={faMagnifyingGlass}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-              />
-              <input
-                type="text"
-                placeholder="Buscar por serviço ou nome..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-2 rounded-full border border-border bg-background text-foreground focus:ring-2 focus:ring-primary outline-none"
-              />
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-8">
+                <h1 className="text-3xl font-bold text-primary">Essenciais Já</h1>
+                
+                {/* Barra de busca Desktop */}
+                <div className="relative w-[400px]">
+                  <FontAwesomeIcon
+                    icon={faMagnifyingGlass}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Buscar por serviço ou nome..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-4 py-2 rounded-full border border-border bg-background text-foreground focus:ring-2 focus:ring-primary outline-none"
+                  />
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                    <FontAwesomeIcon icon={faLocationDot} className="text-lg" />
+                    <span className="text-sm">Belo Horizonte</span>
+                  </div>
+                  <button 
+                    onClick={handleSOSClick}
+                    className="flex items-center gap-2 px-4 py-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive/20 transition-colors font-medium"
+                  >
+                    <FontAwesomeIcon icon={faPhone} className="text-sm" />
+                    <span className="text-sm">Emergência</span>
+                  </button>
+                </div>
               </div>
-            </div>
-
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-                <FontAwesomeIcon icon={faLocationDot} className="text-xl" />
-                <span className="text-sm">Belo Horizonte</span>
-              </div>
-              <button 
-                onClick={handleSOSClick}
-                className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors"
-              >
-                <FontAwesomeIcon icon={faPhone} className="text-sm" />
-                <span className="text-sm font-medium">Emergência</span>
-              </button>
+              
+              {/* Menu de Usuário Logado */}
+              {isLoggedIn && (
+                <div className="flex items-center gap-4">
+                  <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" title="Favoritos">
+                    <FontAwesomeIcon icon={faHeart} className="text-lg" />
+                  </button>
+                  <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" title="Carrinho">
+                    <FontAwesomeIcon icon={faShoppingCart} className="text-lg" />
+                  </button>
+                  <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" title="Notificações">
+                    <FontAwesomeIcon icon={faBell} className="text-lg" />
+                  </button>
+                  <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" title="Configurações">
+                    <FontAwesomeIcon icon={faCog} className="text-lg" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
+
         </header>
 
         {/* Conteúdo Principal Desktop */}
@@ -1134,28 +1445,51 @@ const Index = () => {
 
       {/* Layout Mobile */}
       <div className="md:hidden min-h-screen pb-24">
-        {/* Header Mobile */}
-        <header className="bg-card shadow-lg border-b border-border sticky top-0 z-20">
+        {/* Header Mobile Moderno */}
+        <header className="bg-gradient-to-r from-primary/10 to-secondary/10 shadow-lg border-b border-border sticky top-0 z-20">
           {/* Área de Registro Mobile */}
-          <div className="bg-primary/5 border-b border-primary/10 px-4 py-2">
+          <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-primary/10 px-4 py-3">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2 text-sm text-primary">
                 <FontAwesomeIcon icon={faShield} className="text-primary" />
-                <span>Seja um prestador</span>
+                <span>Serviços essenciais</span>
               </div>
               <div className="flex items-center gap-3">
-                <button 
-                  onClick={() => setIsLoginOpen(true)}
-                  className="text-sm text-primary hover:text-primary-hover transition-colors"
-                >
-                  Entrar
-                </button>
-                <button 
-                  onClick={() => setIsCadastroOpen(true)}
-                  className="px-3 py-1 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary-hover transition-colors"
-                >
-                  Cadastre-se
-                </button>
+                {!isLoggedIn ? (
+                  <>
+                    <button 
+                      onClick={() => setIsCustomerLoginOpen(true)}
+                      className="text-sm text-foreground hover:text-primary transition-colors font-medium"
+                    >
+                      Entrar
+                    </button>
+                    <button 
+                      onClick={() => setIsCustomerCadastroOpen(true)}
+                      className="px-3 py-1.5 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary-hover transition-colors font-medium"
+                    >
+                      Criar Conta
+                    </button>
+                    <button 
+                      onClick={() => setIsLoginOpen(true)}
+                      className="text-xs text-primary hover:text-primary-hover transition-colors"
+                    >
+                      Prestador
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                      <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-xs" />
+                    </div>
+                    <span className="text-sm font-medium text-foreground">{userData.nome}</span>
+                    <button 
+                      onClick={handleLogout}
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <FontAwesomeIcon icon={faSignOutAlt} />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1264,6 +1598,12 @@ const Index = () => {
       
       {/* Modal de Emergência */}
       <EmergenciaModal />
+      
+      {/* Modal de Cadastro de Cliente */}
+      <CustomerCadastroModal />
+      
+      {/* Modal de Login de Cliente */}
+      <CustomerLoginModal />
     </div>
   );
 };
