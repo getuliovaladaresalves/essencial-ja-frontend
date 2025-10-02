@@ -422,17 +422,17 @@ const Index = () => {
       onClick={() => setSelectedProvider(provider)}
       className={`bg-card rounded-xl shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden cursor-pointer border-2 ${
         isSelected ? 'border-primary' : 'border-transparent'
-      } ${provider.parceiroPro ? 'relative' : ''}`}
+      } ${provider.parceiroPro ? 'relative ring-2 ring-yellow-400/20 bg-gradient-to-br from-yellow-50/30 to-orange-50/30 shadow-lg shadow-yellow-400/10' : ''}`}
     >
       {provider.parceiroPro && (
-        <div className="absolute top-0 right-4 -mt-3 bg-accent text-accent-foreground text-xs font-bold px-3 py-1 rounded-full z-10 flex items-center gap-1">
-          <FontAwesomeIcon icon={faStar} />
-          PARCEIRO PRO
+        <div className="absolute top-2 right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full z-10 flex items-center gap-1.5 shadow-lg">
+          <FontAwesomeIcon icon={faCrown} className="text-xs" />
+          <span className="text-xs font-bold">PARCEIRO PRO</span>
         </div>
       )}
       
       {/* Container Principal com Flexbox */}
-      <div className="flex items-start space-x-4 p-4">
+      <div className={`flex items-start space-x-4 p-4 ${provider.parceiroPro ? 'pt-6' : ''}`}>
         {/* Coluna da Imagem */}
         <div className="flex-shrink-0">
           <img
@@ -447,8 +447,17 @@ const Index = () => {
         <div className="flex-1 min-w-0">
           {/* Seção Superior - Nome e Selos */}
           <div className="flex items-start justify-between gap-3">
-            <h3 className="font-bold text-lg text-card-foreground leading-tight line-clamp-2">
+            <h3 className={`font-bold text-lg leading-tight line-clamp-2 ${
+              provider.parceiroPro 
+                ? 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-orange-600' 
+                : 'text-card-foreground'
+            }`}>
               {provider.nome}
+              {provider.parceiroPro && (
+                <span className="ml-2 text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-0.5 rounded-full font-bold">
+                  PRO
+                </span>
+              )}
             </h3>
             {provider.seloEssencial && (
               <div className="flex items-center bg-success/10 text-success px-2 py-1 rounded-full shrink-0">
