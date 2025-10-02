@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Poppins', 'system-ui', 'sans-serif'],
+        poppins: ['Poppins', 'system-ui', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -20,9 +24,15 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-          hover: "hsl(var(--primary-hover))",
+          DEFAULT: "#4f46e5", // Azul Índigo da identidade
+          foreground: "#ffffff",
+          hover: "#4338ca",
+        },
+        // Cores da identidade visual
+        brand: {
+          indigo: "#4f46e5",
+          emerald: "#10b981", 
+          graphite: "#1f2937",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Logo from '@/components/Logo';
 import {
   faMagnifyingGlass,
   faCar,
@@ -1246,7 +1247,7 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-poppins">
       {/* Layout Desktop */}
       <div className="hidden md:flex h-screen flex-col">
         {/* Header Desktop */}
@@ -1310,7 +1311,7 @@ const Index = () => {
           <div className="container mx-auto px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-8">
-                <h1 className="text-3xl font-bold text-primary">Essenciais Já</h1>
+                <Logo size="lg" variant="horizontal" className="text-primary" />
                 
                 {/* Barra de busca Desktop */}
                 <div className="relative w-[400px]">
@@ -1465,7 +1466,7 @@ const Index = () => {
           <div className="px-4 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <h1 className="text-xl font-bold text-primary">Essenciais Já</h1>
+                <Logo size="md" variant="horizontal" className="text-primary" />
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <FontAwesomeIcon icon={faLocationDot} className="text-sm" />
                   <span className="text-sm">BH</span>

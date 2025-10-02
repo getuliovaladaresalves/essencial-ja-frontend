@@ -17,9 +17,9 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 15%;
 
-    --primary: 217 91% 60%;
+    --primary: 238 100% 67%; /* #4f46e5 - Azul Índigo da identidade */
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 217 91% 55%;
+    --primary-hover: 238 100% 62%;
 
     --secondary: 220 13% 95%;
     --secondary-foreground: 220 15% 15%;
@@ -69,9 +69,9 @@ All colors MUST be HSL.
     --popover: 220 15% 12%;
     --popover-foreground: 220 13% 95%;
 
-    --primary: 217 91% 60%;
+    --primary: 238 100% 67%; /* #4f46e5 - Azul Índigo da identidade */
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 217 91% 55%;
+    --primary-hover: 238 100% 62%;
 
     --secondary: 220 15% 18%;
     --secondary-foreground: 220 13% 95%;
