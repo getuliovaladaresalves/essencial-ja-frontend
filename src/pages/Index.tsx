@@ -197,6 +197,114 @@ const mockData: Provider[] = [
       urlMapaEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.218323681949!2d-43.93982838508587!3d-19.91524398661036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa6999e0d0e8389%3A0x155b3833b0e8b6b5!2sPra%C3%A7a%20Sete%20de%20Setembro!5e0!3m2!1spt-BR!2sbr!4v1696185611335!5m2!1spt-BR!2sbr'
     },
   },
+  {
+    id: 8,
+    nome: 'Lavanderia Express 24h',
+    categoria: 'lavanderia',
+    foto: provider3,
+    avaliacao: 4.7,
+    distancia: 1.8,
+    tempoChegada: '2-4 horas',
+    preco: 'A partir de R$ 25',
+    seloEssencial: false,
+    aberto24h: true,
+    parceiroPro: false,
+    descricao: 'Lavagem e secagem expressa. Roupas prontas em até 4 horas.',
+    endereco: {
+      texto: 'Rua da Liberdade, 234 - Savassi, Belo Horizonte - MG',
+      urlMapaEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.218323681949!2d-43.93982838508587!3d-19.91524398661036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa6999e0d0e8389%3A0x155b3833b0e8b6b5!2sPra%C3%A7a%20Sete%20de%20Setembro!5e0!3m2!1spt-BR!2sbr!4v1696185611335!5m2!1spt-BR!2sbr'
+    },
+  },
+  {
+    id: 9,
+    nome: 'Chaveiro Master 24h',
+    categoria: 'chaveiro',
+    foto: provider4,
+    avaliacao: 4.9,
+    distancia: 0.9,
+    tempoChegada: '10-20 min',
+    preco: 'A partir de R$ 80',
+    seloEssencial: true,
+    aberto24h: true,
+    parceiroPro: true,
+    descricao: 'Especialista em abertura de portas, chaves codificadas e duplicatas.',
+    endereco: {
+      texto: 'Rua dos Carijós, 567 - Centro, Belo Horizonte - MG',
+      urlMapaEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.218323681949!2d-43.93982838508587!3d-19.91524398661036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa6999e0d0e8389%3A0x155b3833b0e8b6b5!2sPra%C3%A7a%20Sete%20de%20Setembro!5e0!3m2!1spt-BR!2sbr!4v1696185611335!5m2!1spt-BR!2sbr'
+    },
+  },
+  {
+    id: 10,
+    nome: 'Eletro Fix - Eletricista',
+    categoria: 'eletricista',
+    foto: provider5,
+    avaliacao: 4.8,
+    distancia: 2.7,
+    tempoChegada: '30-50 min',
+    preco: 'A partir de R$ 120',
+    seloEssencial: true,
+    aberto24h: false,
+    parceiroPro: false,
+    descricao: 'Instalações elétricas, reparos e manutenção. Profissional certificado.',
+    endereco: {
+      texto: 'Av. do Contorno, 1234 - Funcionários, Belo Horizonte - MG',
+      urlMapaEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.218323681949!2d-43.93982838508587!3d-19.91524398661036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa6999e0d0e8389%3A0x155b3833b0e8b6b5!2sPra%C3%A7a%20Sete%20de%20Setembro!5e0!3m2!1spt-BR!2sbr!4v1696185611335!5m2!1spt-BR!2sbr'
+    },
+  },
+  {
+    id: 11,
+    nome: 'Desentupidora Rápida',
+    categoria: 'encanador',
+    foto: provider1,
+    avaliacao: 4.6,
+    distancia: 3.2,
+    tempoChegada: '45-60 min',
+    preco: 'A partir de R$ 200',
+    seloEssencial: true,
+    aberto24h: true,
+    parceiroPro: false,
+    descricao: 'Desentupimento de esgotos, pias e vasos sanitários. Atendimento 24h.',
+    endereco: {
+      texto: 'Rua da Bahia, 890 - Centro, Belo Horizonte - MG',
+      urlMapaEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.218323681949!2d-43.93982838508587!3d-19.91524398661036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa6999e0d0e8389%3A0x155b3833b0e8b6b5!2sPra%C3%A7a%20Sete%20de%20Setembro!5e0!3m2!1spt-BR!2sbr!4v1696185611335!5m2!1spt-BR!2sbr'
+    },
+  },
+  {
+    id: 12,
+    nome: 'Gás & Água Express',
+    categoria: 'gas',
+    foto: provider2,
+    avaliacao: 4.5,
+    distancia: 1.1,
+    tempoChegada: '30-45 min',
+    preco: 'Preço de mercado',
+    seloEssencial: false,
+    aberto24h: false,
+    parceiroPro: false,
+    descricao: 'Entrega de botijão de gás e galão de água. Atendimento rápido.',
+    endereco: {
+      texto: 'Rua Pernambuco, 456 - Floresta, Belo Horizonte - MG',
+      urlMapaEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.218323681949!2d-43.93982838508587!3d-19.91524398661036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa6999e0d0e8389%3A0x155b3833b0e8b6b5!2sPra%C3%A7a%20Sete%20de%20Setembro!5e0!3m2!1spt-BR!2sbr!4v1696185611335!5m2!1spt-BR!2sbr'
+    },
+  },
+  {
+    id: 13,
+    nome: 'Borracharia do João',
+    categoria: 'borracharia',
+    foto: provider3,
+    avaliacao: 4.4,
+    distancia: 4.5,
+    tempoChegada: '35-50 min',
+    preco: 'A partir de R$ 90',
+    seloEssencial: false,
+    aberto24h: false,
+    parceiroPro: false,
+    descricao: 'Conserto de pneus, alinhamento e balanceamento. Preços acessíveis.',
+    endereco: {
+      texto: 'Av. Amazonas, 2345 - Pampulha, Belo Horizonte - MG',
+      urlMapaEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.218323681949!2d-43.93982838508587!3d-19.91524398661036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa6999e0d0e8389%3A0x155b3833b0e8b6b5!2sPra%C3%A7a%20Sete%20de%20Setembro!5e0!3m2!1spt-BR!2sbr!4v1696185611335!5m2!1spt-BR!2sbr'
+    },
+  },
 ];
 
 // Categorias rápidas
