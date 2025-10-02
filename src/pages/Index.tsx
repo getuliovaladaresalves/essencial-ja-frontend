@@ -17,6 +17,8 @@ import {
   faJugDetergent,
   faShirt,
   faMapMarkerAlt,
+  faCreditCard,
+  faCheckCircle,
   faUser,
   faEnvelope,
   faBuilding,
