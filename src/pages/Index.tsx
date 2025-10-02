@@ -269,23 +269,23 @@ const Index = () => {
   // Estado para cabeçalho mobile
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Detectar scroll para cabeçalho mobile com throttling
+  // Detectar scroll para cabeçalho mobile com debounce suave
   useEffect(() => {
-    let ticking = false;
+    let timeoutId: NodeJS.Timeout;
     
     const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const scrollTop = window.scrollY;
-          setIsScrolled(scrollTop > 80);
-          ticking = false;
-        });
-        ticking = true;
-      }
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        const scrollTop = window.scrollY;
+        setIsScrolled(scrollTop > 100);
+      }, 10); // Debounce de 10ms para suavidade máxima
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   // Lógica de filtro e ordenação
@@ -1481,9 +1481,9 @@ const Index = () => {
       {/* Layout Mobile */}
       <div className="md:hidden min-h-screen pb-24">
         {/* Header Mobile Moderno */}
-        <header className={`sticky top-0 z-20 transition-all duration-300 ${
+        <header className={`sticky top-0 z-20 transition-all duration-500 ease-in-out ${
           isScrolled 
-            ? 'bg-background shadow-lg border-b border-border py-2' 
+            ? 'bg-background/95 backdrop-blur-sm shadow-lg border-b border-border py-2' 
             : 'bg-gradient-to-r from-primary/10 to-secondary/10 shadow-lg border-b border-border py-0'
         }`}>
           {/* Versão Normal do Header */}
@@ -1555,21 +1555,21 @@ const Index = () => {
                     <>
                       <button 
                         onClick={() => setIsCustomerLoginOpen(true)}
-                        className="p-2 text-muted-foreground hover:text-primary transition-colors"
+                        className="p-2 text-muted-foreground hover:text-primary transition-colors rounded-full hover:bg-muted/50"
                         title="Entrar"
                       >
                         <FontAwesomeIcon icon={faSignInAlt} className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => setIsCustomerCadastroOpen(true)}
-                        className="p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary-hover transition-colors"
+                        className="p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary-hover transition-colors shadow-md"
                         title="Criar Conta"
                       >
                         <FontAwesomeIcon icon={faUserPlus} className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => setIsLoginOpen(true)}
-                        className="p-2 text-primary hover:text-primary-hover transition-colors"
+                        className="p-2 text-primary hover:text-primary-hover transition-colors rounded-full hover:bg-primary/10"
                         title="Sou Prestador"
                       >
                         <FontAwesomeIcon icon={faBuilding} className="w-4 h-4" />
@@ -1577,12 +1577,12 @@ const Index = () => {
                     </>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center overflow-hidden">
-                        <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-sm w-4 h-4" />
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center overflow-hidden ring-2 ring-primary/20">
+                        <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-sm w-4 h-4 rounded-full" />
                       </div>
                       <button 
                         onClick={handleLogout}
-                        className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                        className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted/50"
                         title="Sair"
                       >
                         <FontAwesomeIcon icon={faSignOutAlt} className="w-4 h-4" />
@@ -1592,7 +1592,7 @@ const Index = () => {
                   
                   <button 
                     onClick={handleSOSClick}
-                    className="p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive/20 transition-colors"
+                    className="p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive/20 transition-colors shadow-md hover:shadow-lg"
                     title="Emergência"
                   >
                     <FontAwesomeIcon icon={faPhone} className="w-4 h-4" />
