@@ -1,0 +1,5 @@
+# Configuração do Favicon para Essencial Já
+# Cores: Azul Índigo (#4f46e5) como fundo, branco para o ícone
+# Design: Círculo azul com ícone de localização e chave brancos
+# Tamanhos necessários: 16x16, 32x32, 48x48, 64x64, 128x128, 256x256
+# Formato: PNG para compatibilidade máxima
