@@ -1,6 +1,15 @@
-# Essenciais Já
+# Essenciais Já - Versão 1.0
 
 Uma aplicação web moderna para conectar usuários com prestadores de serviços essenciais como eletricistas, encanadores, chaveiros e borracheiros.
+
+**Última atualização:** $(Get-Date -Format "dd/MM/yyyy HH:mm")
+
+## 📊 Status do Projeto
+
+🟢 **Projeto Ativo** - Em desenvolvimento contínuo
+- ✅ Estrutura base implementada
+- ✅ Componentes UI configurados
+- 🔄 Funcionalidades em desenvolvimento
 
 ## 🚀 Sobre o Projeto
 
