@@ -382,6 +382,10 @@ const Index = () => {
   const [prestadorContratado, setPrestadorContratado] = useState<Provider | null>(null);
   const [detalhesAdicionais, setDetalhesAdicionais] = useState('');
 
+  // Estados para interatividade
+  const [hoveredProvider, setHoveredProvider] = useState<number | null>(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
+
   // Simulação do processamento
   useEffect(() => {
     if (fluxoEtapa === 'aguardando') {
@@ -415,10 +419,12 @@ const Index = () => {
     if (filters.recomendados) {
       result = result.filter((p) => p.avaliacao >= 4.8);
     }
-    if (filters.aberto24h) {
+    // Aplicar filtros combinados
+    if (filters.aberto24h && filters.seloEssencial) {
+      result = result.filter((p) => p.aberto24h && p.seloEssencial);
+    } else if (filters.aberto24h) {
       result = result.filter((p) => p.aberto24h);
-    }
-    if (filters.seloEssencial) {
+    } else if (filters.seloEssencial) {
       result = result.filter((p) => p.seloEssencial);
     }
 
@@ -546,9 +552,16 @@ const Index = () => {
   // Componente do Card de Prestador
   const ProviderCard = ({ provider, isSelected }: { provider: Provider; isSelected: boolean }) => (
     <div
-      onClick={() => setSelectedProvider(provider)}
+      onClick={() => {
+        setScrollPosition(window.scrollY);
+        setSelectedProvider(provider);
+      }}
+      onMouseEnter={() => setHoveredProvider(provider.id)}
+      onMouseLeave={() => setHoveredProvider(null)}
       className={`bg-card rounded-xl shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden cursor-pointer border-2 ${
         isSelected ? 'border-primary' : 'border-transparent'
+      } ${
+        hoveredProvider === provider.id ? 'ring-2 ring-primary shadow-lg' : ''
       } ${provider.parceiroPro ? 'relative ring-2 ring-yellow-400/20 bg-gradient-to-br from-yellow-50/30 to-orange-50/30 shadow-lg shadow-yellow-400/10' : ''}`}
     >
       
@@ -1250,7 +1263,12 @@ const Index = () => {
   const ProviderModal = ({ provider }: { provider: Provider }) => (
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-      onClick={() => setSelectedProvider(null)}
+      onClick={() => {
+        setSelectedProvider(null);
+        setTimeout(() => {
+          window.scrollTo(0, scrollPosition);
+        }, 100);
+      }}
     >
       <div
         className="bg-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
@@ -1264,7 +1282,12 @@ const Index = () => {
             className="w-full h-64 object-cover rounded-t-2xl"
           />
           <button
-            onClick={() => setSelectedProvider(null)}
+            onClick={() => {
+              setSelectedProvider(null);
+              setTimeout(() => {
+                window.scrollTo(0, scrollPosition);
+              }, 100);
+            }}
             className="absolute top-4 right-4 bg-card text-card-foreground rounded-full w-10 h-10 flex items-center justify-center hover:bg-secondary transition-colors"
           >
             <FontAwesomeIcon icon={faTimes} />
@@ -1739,8 +1762,24 @@ const Index = () => {
                 />
               ))}
               {filteredAndSortedProviders.length === 0 && (
-                <div className="text-center py-12 text-muted-foreground">
-                  Nenhum prestador encontrado
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FontAwesomeIcon icon={faMagnifyingGlass} className="text-2xl text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum serviço encontrado</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Tente ajustar os seus filtros ou o termo de busca.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSearchTerm('');
+                      setSelectedCategory(null);
+                      setFilters({ recomendados: false, aberto24h: false, seloEssencial: false });
+                    }}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover transition-colors"
+                  >
+                    Limpar Filtros
+                  </button>
                 </div>
               )}
             </div>
@@ -1884,8 +1923,24 @@ const Index = () => {
                 />
               ))}
               {filteredAndSortedProviders.length === 0 && (
-                <div className="text-center py-12 text-muted-foreground">
-                  Nenhum prestador encontrado
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FontAwesomeIcon icon={faMagnifyingGlass} className="text-2xl text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum serviço encontrado</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Tente ajustar os seus filtros ou o termo de busca.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSearchTerm('');
+                      setSelectedCategory(null);
+                      setFilters({ recomendados: false, aberto24h: false, seloEssencial: false });
+                    }}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover transition-colors"
+                  >
+                    Limpar Filtros
+                  </button>
                 </div>
               )}
             </div>
