@@ -1485,39 +1485,72 @@ const Index = () => {
               </p>
 
               {/* Controles de Filtro e Ordenação */}
-              <div className="flex items-center space-x-2 mt-4">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                  className="border border-border rounded-full py-2 px-4 bg-background text-foreground hover:bg-gray-100 cursor-pointer text-sm transition-colors"
-                >
-                  <option value="relevance">Ordenar por: Relevância</option>
-                  <option value="rating">Ordenar por: Avaliação</option>
-                  <option value="distance">Ordenar por: Distância</option>
-                </select>
-
-                <button
-                  onClick={() => handleFilterToggle('aberto24h')}
-                  className={`border rounded-full py-2 px-4 text-sm font-medium transition-colors ${
-                    filters.aberto24h
-                      ? 'bg-primary text-primary-foreground border-primary'
-                      : 'bg-background text-foreground border-border hover:bg-gray-100'
-                  }`}
-                >
-                  Aberto 24h
-                </button>
-
-                <button
-                  onClick={() => handleFilterToggle('seloEssencial')}
-                  className={`border rounded-full py-2 px-4 text-sm font-medium transition-colors ${
-                    filters.seloEssencial
-                      ? 'bg-primary text-primary-foreground border-primary'
-                      : 'bg-background text-foreground border-border hover:bg-gray-100'
-                  }`}
-                >
-                  Selo Essencial
-                </button>
+              {/* Categorias Disponíveis */}
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold text-foreground mb-3">Categorias</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {quickCategories.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
+                      className={`flex items-center gap-2 p-3 rounded-lg text-sm font-medium transition-all ${
+                        selectedCategory === category.id
+                          ? 'bg-primary text-primary-foreground shadow-md'
+                          : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                      }`}
+                    >
+                      <FontAwesomeIcon icon={category.icon} className="text-base" />
+                      <span>{category.name}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
+
+              {/* Filtros e Ordenação */}
+              <div className="mt-6 space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-3">Filtros</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => handleFilterToggle('aberto24h')}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                        filters.aberto24h
+                          ? 'bg-primary text-primary-foreground shadow-md'
+                          : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                      }`}
+                    >
+                      <FontAwesomeIcon icon={faClock} className="text-sm" />
+                      <span>Aberto 24h</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleFilterToggle('seloEssencial')}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                        filters.seloEssencial
+                          ? 'bg-success text-success-foreground shadow-md'
+                          : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                      }`}
+                    >
+                      <FontAwesomeIcon icon={faShield} className="text-sm" />
+                      <span>Selo Essencial</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-3">Ordenar por</h3>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                    className="w-full border border-border rounded-lg py-3 px-4 bg-background text-foreground hover:bg-muted cursor-pointer text-sm transition-colors focus:ring-2 focus:ring-primary focus:border-primary"
+                  >
+                    <option value="relevance">Relevância</option>
+                    <option value="rating">Avaliação</option>
+                    <option value="distance">Distância</option>
+                  </select>
+                </div>
+              </div>
+
             </div>
 
             {/* Lista de Prestadores */}
