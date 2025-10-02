@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faMagnifyingGlass,
@@ -266,27 +266,6 @@ const Index = () => {
     endereco: '',
   });
 
-  // Estado para cabeçalho mobile
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  // Detectar scroll para cabeçalho mobile com debounce suave
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    
-    const handleScroll = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        const scrollTop = window.scrollY;
-        setIsScrolled(scrollTop > 100);
-      }, 10); // Debounce de 10ms para suavidade máxima
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      clearTimeout(timeoutId);
-    };
-  }, []);
 
   // Lógica de filtro e ordenação
   const filteredAndSortedProviders = useMemo(() => {
@@ -1480,147 +1459,69 @@ const Index = () => {
 
       {/* Layout Mobile */}
       <div className="md:hidden min-h-screen pb-24">
-        {/* Header Mobile Moderno */}
-        <header className={`sticky top-0 z-20 transition-all duration-500 ease-in-out ${
-          isScrolled 
-            ? 'bg-background/95 backdrop-blur-sm shadow-lg border-b border-border py-2' 
-            : 'bg-gradient-to-r from-primary/10 to-secondary/10 shadow-lg border-b border-border py-0'
-        }`}>
-          {/* Versão Normal do Header */}
-          {!isScrolled && (
-            <>
-              {/* Área de Registro Mobile */}
-              <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-primary/10 px-4 py-3">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2 text-sm text-primary">
-                    <FontAwesomeIcon icon={faShield} className="text-primary" />
-                    <span>Serviços essenciais</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {!isLoggedIn ? (
-                      <>
-                        <button 
-                          onClick={() => setIsCustomerLoginOpen(true)}
-                          className="text-sm text-foreground hover:text-primary transition-colors font-medium"
-                        >
-                          Entrar
-                        </button>
-                        <button 
-                          onClick={() => setIsCustomerCadastroOpen(true)}
-                          className="px-3 py-1.5 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary-hover transition-colors font-medium"
-                        >
-                          Criar Conta
-                        </button>
-                        <button 
-                          onClick={() => setIsLoginOpen(true)}
-                          className="text-xs text-primary hover:text-primary-hover transition-colors"
-                        >
-                          Prestador
-                        </button>
-                      </>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                          <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-xs" />
-                        </div>
-                        <span className="text-sm font-medium text-foreground">{userData.nome}</span>
-                        <button 
-                          onClick={handleLogout}
-                          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          <FontAwesomeIcon icon={faSignOutAlt} />
-                        </button>
-                      </div>
-                    )}
-                  </div>
+        {/* Header Mobile Simplificado e Estável */}
+        <header className="sticky top-0 z-20 bg-background shadow-lg border-b border-border">
+          {/* Header Principal - Sempre visível */}
+          <div className="px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl font-bold text-primary">Essenciais Já</h1>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <FontAwesomeIcon icon={faLocationDot} className="text-sm" />
+                  <span className="text-sm">BH</span>
                 </div>
               </div>
-            </>
-          )}
-
-          {/* Versão Compacta do Header (quando scrolled) */}
-          {isScrolled && (
-            <div className="px-4 py-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-lg font-bold text-primary">Essenciais Já</h1>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <FontAwesomeIcon icon={faLocationDot} className="text-sm" />
-                    <span className="text-sm">BH</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  {!isLoggedIn ? (
-                    <>
-                      <button 
-                        onClick={() => setIsCustomerLoginOpen(true)}
-                        className="p-2 text-muted-foreground hover:text-primary transition-colors rounded-full hover:bg-muted/50"
-                        title="Entrar"
-                      >
-                        <FontAwesomeIcon icon={faSignInAlt} className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => setIsCustomerCadastroOpen(true)}
-                        className="p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary-hover transition-colors shadow-md"
-                        title="Criar Conta"
-                      >
-                        <FontAwesomeIcon icon={faUserPlus} className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => setIsLoginOpen(true)}
-                        className="p-2 text-primary hover:text-primary-hover transition-colors rounded-full hover:bg-primary/10"
-                        title="Sou Prestador"
-                      >
-                        <FontAwesomeIcon icon={faBuilding} className="w-4 h-4" />
-                      </button>
-                    </>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center overflow-hidden ring-2 ring-primary/20">
-                        <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-sm w-4 h-4 rounded-full" />
-                      </div>
-                      <button 
-                        onClick={handleLogout}
-                        className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted/50"
-                        title="Sair"
-                      >
-                        <FontAwesomeIcon icon={faSignOutAlt} className="w-4 h-4" />
-                      </button>
+              
+              <div className="flex items-center gap-2">
+                {!isLoggedIn ? (
+                  <>
+                    <button 
+                      onClick={() => setIsCustomerLoginOpen(true)}
+                      className="p-2 text-muted-foreground hover:text-primary transition-colors rounded-full hover:bg-muted/50"
+                      title="Entrar"
+                    >
+                      <FontAwesomeIcon icon={faSignInAlt} className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => setIsCustomerCadastroOpen(true)}
+                      className="p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary-hover transition-colors shadow-md"
+                      title="Criar Conta"
+                    >
+                      <FontAwesomeIcon icon={faUserPlus} className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => setIsLoginOpen(true)}
+                      className="p-2 text-primary hover:text-primary-hover transition-colors rounded-full hover:bg-primary/10"
+                      title="Sou Prestador"
+                    >
+                      <FontAwesomeIcon icon={faBuilding} className="w-4 h-4" />
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center overflow-hidden ring-2 ring-primary/20">
+                      <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-sm w-4 h-4" />
                     </div>
-                  )}
-                  
-                  <button 
-                    onClick={handleSOSClick}
-                    className="p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive/20 transition-colors shadow-md hover:shadow-lg"
-                    title="Emergência"
-                  >
-                    <FontAwesomeIcon icon={faPhone} className="w-4 h-4" />
-                  </button>
-                </div>
+                    <button 
+                      onClick={handleLogout}
+                      className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted/50"
+                      title="Sair"
+                    >
+                      <FontAwesomeIcon icon={faSignOutAlt} className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                
+                <button 
+                  onClick={handleSOSClick}
+                  className="p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive/20 transition-colors shadow-md hover:shadow-lg"
+                  title="Emergência"
+                >
+                  <FontAwesomeIcon icon={faPhone} className="w-4 h-4" />
+                </button>
               </div>
             </div>
-          )}
-
-          {/* Conteúdo Principal do Header - Só aparece quando não scrolled */}
-          {!isScrolled && (
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h1 className="text-2xl font-bold text-primary">Essenciais Já</h1>
-              <button 
-                onClick={handleSOSClick}
-                className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors"
-              >
-                <FontAwesomeIcon icon={faPhone} className="text-sm" />
-                <span className="text-sm font-medium">Emergência</span>
-              </button>
-            </div>
-              <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                <FontAwesomeIcon icon={faLocationDot} className="text-sm" />
-                <span className="text-sm">Belo Horizonte</span>
-              </div>
-            </div>
-          )}
+          </div>
         </header>
 
         <main className="p-4 space-y-6">
