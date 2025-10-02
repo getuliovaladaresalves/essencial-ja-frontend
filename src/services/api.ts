@@ -1,5 +1,5 @@
 // Serviço de API para integração com backend
-const API_BASE_URL = 'http://localhost:3000';
+import { API_ENDPOINTS, createAuthHeaders, fetchWithRetry } from '../config/api';
 
 export interface LoginRequest {
   email: string;
@@ -83,7 +83,7 @@ class ApiService {
 
   // Login
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetchWithRetry(API_ENDPOINTS.auth.login, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ class ApiService {
 
   // Listar prestadores
   async getPrestadores(): Promise<PrestadoresResponse> {
-    const response = await fetch(`${API_BASE_URL}/prestadores`, {
+    const response = await fetchWithRetry(API_ENDPOINTS.prestadores.list, {
       method: 'GET',
       headers: this.getHeaders(),
     });
@@ -118,7 +118,7 @@ class ApiService {
 
   // Buscar prestador por ID
   async getPrestadorById(id: string): Promise<{ message: string; data: Prestador }> {
-    const response = await fetch(`${API_BASE_URL}/prestadores/${id}`, {
+    const response = await fetchWithRetry(API_ENDPOINTS.prestadores.byId(id), {
       method: 'GET',
       headers: this.getHeaders(),
     });
@@ -133,7 +133,7 @@ class ApiService {
 
   // Buscar prestadores por serviço
   async getPrestadoresByServico(servicoId: string): Promise<PrestadoresResponse> {
-    const response = await fetch(`${API_BASE_URL}/prestadores/servico/${servicoId}`, {
+    const response = await fetchWithRetry(API_ENDPOINTS.prestadores.byServico(servicoId), {
       method: 'GET',
       headers: this.getHeaders(),
     });

@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  nome      String
+  senhaHash String
+  criadoEm  DateTime   @default(now())
+  prestador Prestador?
+}
+
+model Categoria {
+  id       String    @id @default(uuid())
+  nome     String    @unique
+  servicos Servico[]
+}
+
+model Servico {
+  id          String      @id @default(uuid())
+  nome        String
+  categoriaId String
+  categoria   Categoria   @relation(fields: [categoriaId], references: [id])
+  prestadores Prestador[] @relation("PrestadorToServico")
+}
+
+model Prestador {
+  id         String    @id @default(uuid())
+  fotoUrl    String?
+  descricao  String?
+  disponivel Boolean   @default(true)
+  userId     String    @unique
+  user       User      @relation(fields: [userId], references: [id])
+  servicos   Servico[] @relation("PrestadorToServico")
+}
