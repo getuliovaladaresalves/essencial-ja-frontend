@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faMagnifyingGlass,
@@ -266,6 +266,20 @@ const Index = () => {
     endereco: '',
   });
 
+  // Estado para cabeçalho mobile
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Detectar scroll para cabeçalho mobile
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setIsScrolled(scrollTop > 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Lógica de filtro e ordenação
   const filteredAndSortedProviders = useMemo(() => {
     let result = [...mockData];
@@ -425,7 +439,7 @@ const Index = () => {
       } ${provider.parceiroPro ? 'relative ring-2 ring-yellow-400/20 bg-gradient-to-br from-yellow-50/30 to-orange-50/30 shadow-lg shadow-yellow-400/10' : ''}`}
     >
       {provider.parceiroPro && (
-        <div className="absolute top-2 right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full z-10 flex items-center gap-1.5 shadow-lg">
+        <div className="absolute top-2 right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full z-20 flex items-center gap-1.5 shadow-lg">
           <FontAwesomeIcon icon={faCrown} className="text-xs" />
           <span className="text-xs font-bold">PARCEIRO PRO</span>
         </div>
@@ -445,7 +459,7 @@ const Index = () => {
 
         {/* Coluna do Conteúdo */}
         <div className="flex-1 min-w-0">
-          {/* Seção Superior - Nome e Selos */}
+          {/* Seção Superior - Nome */}
           <div className="flex items-start justify-between gap-3">
             <h3 className={`font-bold text-lg leading-tight line-clamp-2 ${
               provider.parceiroPro 
@@ -459,10 +473,20 @@ const Index = () => {
                 </span>
               )}
             </h3>
+          </div>
+
+          {/* Selos e Badges - Posicionamento separado */}
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
             {provider.seloEssencial && (
               <div className="flex items-center bg-success/10 text-success px-2 py-1 rounded-full shrink-0">
                 <FontAwesomeIcon icon={faShield} className="text-xs mr-1" />
                 <span className="text-xs font-bold whitespace-nowrap">Selo Essencial</span>
+              </div>
+            )}
+            {provider.aberto24h && (
+              <div className="flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full shrink-0">
+                <FontAwesomeIcon icon={faClock} className="text-xs mr-1" />
+                <span className="text-xs font-bold whitespace-nowrap">24h</span>
               </div>
             )}
           </div>
@@ -1455,58 +1479,130 @@ const Index = () => {
       {/* Layout Mobile */}
       <div className="md:hidden min-h-screen pb-24">
         {/* Header Mobile Moderno */}
-        <header className="bg-gradient-to-r from-primary/10 to-secondary/10 shadow-lg border-b border-border sticky top-0 z-20">
-          {/* Área de Registro Mobile */}
-          <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-primary/10 px-4 py-3">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2 text-sm text-primary">
-                <FontAwesomeIcon icon={faShield} className="text-primary" />
-                <span>Serviços essenciais</span>
-              </div>
-              <div className="flex items-center gap-3">
-                {!isLoggedIn ? (
-                  <>
-                    <button 
-                      onClick={() => setIsCustomerLoginOpen(true)}
-                      className="text-sm text-foreground hover:text-primary transition-colors font-medium"
-                    >
-                      Entrar
-                    </button>
-                    <button 
-                      onClick={() => setIsCustomerCadastroOpen(true)}
-                      className="px-3 py-1.5 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary-hover transition-colors font-medium"
-                    >
-                      Criar Conta
-                    </button>
-                    <button 
-                      onClick={() => setIsLoginOpen(true)}
-                      className="text-xs text-primary hover:text-primary-hover transition-colors"
-                    >
-                      Prestador
-                    </button>
-                  </>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                      <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-xs" />
-                    </div>
-                    <span className="text-sm font-medium text-foreground">{userData.nome}</span>
-                    <button 
-                      onClick={handleLogout}
-                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <FontAwesomeIcon icon={faSignOutAlt} />
-                    </button>
+        <header className={`bg-gradient-to-r from-primary/10 to-secondary/10 shadow-lg border-b border-border sticky top-0 z-20 transition-all duration-300 ${
+          isScrolled ? 'py-2' : 'py-0'
+        }`}>
+          {/* Versão Normal do Header */}
+          {!isScrolled && (
+            <>
+              {/* Área de Registro Mobile */}
+              <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-primary/10 px-4 py-3">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2 text-sm text-primary">
+                    <FontAwesomeIcon icon={faShield} className="text-primary" />
+                    <span>Serviços essenciais</span>
                   </div>
-                )}
+                  <div className="flex items-center gap-3">
+                    {!isLoggedIn ? (
+                      <>
+                        <button 
+                          onClick={() => setIsCustomerLoginOpen(true)}
+                          className="text-sm text-foreground hover:text-primary transition-colors font-medium"
+                        >
+                          Entrar
+                        </button>
+                        <button 
+                          onClick={() => setIsCustomerCadastroOpen(true)}
+                          className="px-3 py-1.5 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary-hover transition-colors font-medium"
+                        >
+                          Criar Conta
+                        </button>
+                        <button 
+                          onClick={() => setIsLoginOpen(true)}
+                          className="text-xs text-primary hover:text-primary-hover transition-colors"
+                        >
+                          Prestador
+                        </button>
+                      </>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                          <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-xs" />
+                        </div>
+                        <span className="text-sm font-medium text-foreground">{userData.nome}</span>
+                        <button 
+                          onClick={handleLogout}
+                          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <FontAwesomeIcon icon={faSignOutAlt} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Versão Compacta do Header (quando scrolled) */}
+          {isScrolled && (
+            <div className="px-4 py-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <h1 className="text-lg font-bold text-primary">Essenciais Já</h1>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <FontAwesomeIcon icon={faLocationDot} className="text-sm" />
+                    <span className="text-sm">BH</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  {!isLoggedIn ? (
+                    <>
+                      <button 
+                        onClick={() => setIsCustomerLoginOpen(true)}
+                        className="p-2 text-muted-foreground hover:text-primary transition-colors"
+                        title="Entrar"
+                      >
+                        <FontAwesomeIcon icon={faSignInAlt} />
+                      </button>
+                      <button 
+                        onClick={() => setIsCustomerCadastroOpen(true)}
+                        className="p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary-hover transition-colors"
+                        title="Criar Conta"
+                      >
+                        <FontAwesomeIcon icon={faUserPlus} />
+                      </button>
+                      <button 
+                        onClick={() => setIsLoginOpen(true)}
+                        className="p-2 text-primary hover:text-primary-hover transition-colors"
+                        title="Sou Prestador"
+                      >
+                        <FontAwesomeIcon icon={faBuilding} />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                        <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-sm" />
+                      </div>
+                      <button 
+                        onClick={handleLogout}
+                        className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                        title="Sair"
+                      >
+                        <FontAwesomeIcon icon={faSignOutAlt} />
+                      </button>
+                    </div>
+                  )}
+                  
+                  <button 
+                    onClick={handleSOSClick}
+                    className="p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive/20 transition-colors"
+                    title="Emergência"
+                  >
+                    <FontAwesomeIcon icon={faPhone} />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Conteúdo Principal do Header */}
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h1 className="text-2xl font-bold text-primary">Essenciais Já</h1>
+          {/* Conteúdo Principal do Header - Só aparece quando não scrolled */}
+          {!isScrolled && (
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h1 className="text-2xl font-bold text-primary">Essenciais Já</h1>
               <button 
                 onClick={handleSOSClick}
                 className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors"
@@ -1515,11 +1611,12 @@ const Index = () => {
                 <span className="text-sm font-medium">Emergência</span>
               </button>
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <FontAwesomeIcon icon={faLocationDot} className="text-sm" />
-              <span className="text-sm">Belo Horizonte</span>
+              <div className="flex items-center gap-2 text-muted-foreground mb-2">
+                <FontAwesomeIcon icon={faLocationDot} className="text-sm" />
+                <span className="text-sm">Belo Horizonte</span>
+              </div>
             </div>
-          </div>
+          )}
         </header>
 
         <main className="p-4 space-y-6">
