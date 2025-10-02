@@ -20,6 +20,8 @@ import {
   faEnvelope,
   faBuilding,
   faCheck,
+  faLock,
+  faSignInAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Importação das imagens geradas
@@ -223,6 +225,13 @@ const Index = () => {
     certificacoes: '',
   });
 
+  // Estado do modal de login
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [loginData, setLoginData] = useState({
+    email: '',
+    senha: '',
+  });
+
   // Lógica de filtro e ordenação
   const filteredAndSortedProviders = useMemo(() => {
     let result = [...mockData];
@@ -294,6 +303,24 @@ const Index = () => {
 
   const handleCadastroChange = (field: string, value: string) => {
     setCadastroData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Funções para o formulário de login
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Aqui você pode adicionar a lógica para autenticação
+    console.log('Dados do login:', loginData);
+    alert('✅ Login realizado com sucesso!\n\nBem-vindo de volta!');
+    setIsLoginOpen(false);
+    // Limpar formulário
+    setLoginData({
+      email: '',
+      senha: '',
+    });
+  };
+
+  const handleLoginChange = (field: string, value: string) => {
+    setLoginData(prev => ({ ...prev, [field]: value }));
   };
 
   // Componente do Card de Prestador
@@ -559,6 +586,97 @@ const Index = () => {
     </Dialog>
   );
 
+  // Modal de Login
+  const LoginModal = () => (
+    <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-2xl">
+            <FontAwesomeIcon icon={faSignInAlt} className="text-primary" />
+            Entrar na Conta
+          </DialogTitle>
+          <DialogDescription>
+            Digite suas credenciais para acessar sua conta de prestador.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <form onSubmit={handleLoginSubmit} className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                E-mail *
+              </label>
+              <Input
+                type="email"
+                value={loginData.email}
+                onChange={(e) => handleLoginChange('email', e.target.value)}
+                placeholder="seu@email.com"
+                required
+                className="w-full"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Senha *
+              </label>
+              <Input
+                type="password"
+                value={loginData.senha}
+                onChange={(e) => handleLoginChange('senha', e.target.value)}
+                placeholder="Sua senha"
+                required
+                className="w-full"
+              />
+            </div>
+          </div>
+
+          {/* Links adicionais */}
+          <div className="text-center space-y-2">
+            <button
+              type="button"
+              className="text-sm text-primary hover:text-primary-hover transition-colors"
+            >
+              Esqueci minha senha
+            </button>
+            <div className="text-sm text-muted-foreground">
+              Não tem uma conta?{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLoginOpen(false);
+                  setIsCadastroOpen(true);
+                }}
+                className="text-primary hover:text-primary-hover transition-colors font-medium"
+              >
+                Cadastre-se aqui
+              </button>
+            </div>
+          </div>
+
+          {/* Botões */}
+          <div className="flex gap-4 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsLoginOpen(false)}
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1 bg-primary hover:bg-primary-hover"
+            >
+              <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
+              Entrar
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+
   // Modal de Detalhes do Prestador
   const ProviderModal = ({ provider }: { provider: Provider }) => (
     <div
@@ -698,7 +816,10 @@ const Index = () => {
                 <span>Seja um prestador de serviços</span>
               </div>
               <div className="flex items-center gap-4">
-                <button className="text-sm text-primary hover:text-primary-hover transition-colors">
+                <button 
+                  onClick={() => setIsLoginOpen(true)}
+                  className="text-sm text-primary hover:text-primary-hover transition-colors"
+                >
                   Entrar
                 </button>
                 <button 
@@ -850,10 +971,16 @@ const Index = () => {
                 <span>Seja um prestador</span>
               </div>
               <div className="flex items-center gap-3">
-                <button className="text-sm text-primary hover:text-primary-hover transition-colors">
+                <button 
+                  onClick={() => setIsLoginOpen(true)}
+                  className="text-sm text-primary hover:text-primary-hover transition-colors"
+                >
                   Entrar
                 </button>
-                <button className="px-3 py-1 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary-hover transition-colors">
+                <button 
+                  onClick={() => setIsCadastroOpen(true)}
+                  className="px-3 py-1 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary-hover transition-colors"
+                >
                   Cadastre-se
                 </button>
               </div>
@@ -955,6 +1082,9 @@ const Index = () => {
       
       {/* Modal de Cadastro */}
       <CadastroModal />
+      
+      {/* Modal de Login */}
+      <LoginModal />
     </div>
   );
 };
