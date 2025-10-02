@@ -1608,10 +1608,6 @@ const Index = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Logo size="md" variant="horizontal" className="text-primary" />
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <FontAwesomeIcon icon={faLocationDot} className="text-sm" />
-                  <span className="text-sm">BH</span>
-                </div>
               </div>
               
               <div className="flex items-center gap-2">
@@ -1622,7 +1618,7 @@ const Index = () => {
                       className="p-2 text-muted-foreground hover:text-primary transition-colors rounded-full hover:bg-muted/50"
                       title="Entrar"
                     >
-                      <FontAwesomeIcon icon={faSignInAlt} className="w-4 h-4" />
+                      <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
                     </button>
                     <button 
                       onClick={() => setIsCustomerCadastroOpen(true)}
@@ -1653,14 +1649,6 @@ const Index = () => {
                     </button>
                   </div>
                 )}
-                
-                <button 
-                  onClick={handleSOSClick}
-                  className="p-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive/20 transition-colors shadow-md hover:shadow-lg"
-                  title="Emergência"
-                >
-                  <FontAwesomeIcon icon={faPhone} className="w-4 h-4" />
-                </button>
               </div>
             </div>
           </div>
