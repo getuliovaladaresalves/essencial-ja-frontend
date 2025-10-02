@@ -22,6 +22,9 @@ import {
   faCheck,
   faLock,
   faSignInAlt,
+  faExclamationTriangle,
+  faFire,
+  faWrench,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Importação das imagens geradas
@@ -232,6 +235,10 @@ const Index = () => {
     senha: '',
   });
 
+  // Estado do modal de emergência
+  const [isEmergenciaOpen, setIsEmergenciaOpen] = useState(false);
+  const [categoriaEmergencia, setCategoriaEmergencia] = useState<string | null>(null);
+
   // Lógica de filtro e ordenação
   const filteredAndSortedProviders = useMemo(() => {
     let result = [...mockData];
@@ -276,8 +283,25 @@ const Index = () => {
   };
 
   const handleSOSClick = () => {
-    alert('🚨 SOS EMERGÊNCIA ACIONADO!\n\nNosso time está sendo notificado e entrará em contato em instantes.');
+    setIsEmergenciaOpen(true);
   };
+
+  // Lógica para prestadores de emergência
+  const emergenciaProviders = useMemo(() => {
+    if (!categoriaEmergencia) return [];
+    return mockData.filter(provider => 
+      provider.categoria === categoriaEmergencia && 
+      (provider.aberto24h || provider.seloEssencial)
+    );
+  }, [categoriaEmergencia]);
+
+  // Categorias de emergência
+  const categoriasEmergencia = [
+    { id: 'borracharia', name: 'Borracharia', icon: faCar, description: 'Pneu furado, conserto urgente' },
+    { id: 'chaveiro', name: 'Chaveiro', icon: faKey, description: 'Fechado fora de casa, chave perdida' },
+    { id: 'eletricista', name: 'Eletricista', icon: faBolt, description: 'Falta de energia, problemas elétricos' },
+    { id: 'encanador', name: 'Encanador', icon: faWrench, description: 'Vazamento, entupimento urgente' },
+  ];
 
   // Funções para o formulário de cadastro
   const handleCadastroSubmit = (e: React.FormEvent) => {
@@ -677,6 +701,152 @@ const Index = () => {
     </Dialog>
   );
 
+  // Modal de Emergência
+  const EmergenciaModal = () => (
+    <Dialog open={isEmergenciaOpen} onOpenChange={setIsEmergenciaOpen}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-2xl text-destructive">
+            <FontAwesomeIcon icon={faExclamationTriangle} className="text-destructive" />
+            🚨 SOS EMERGÊNCIA
+          </DialogTitle>
+          <DialogDescription>
+            Selecione o tipo de serviço de emergência que você precisa. Mostraremos os prestadores disponíveis 24h.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          {/* Seleção de Categoria */}
+          {!categoriaEmergencia && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-foreground">
+                Qual tipo de emergência você está enfrentando?
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {categoriasEmergencia.map((categoria) => (
+                  <button
+                    key={categoria.id}
+                    onClick={() => setCategoriaEmergencia(categoria.id)}
+                    className="p-4 border border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all text-left group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FontAwesomeIcon 
+                        icon={categoria.icon} 
+                        className="text-2xl text-primary group-hover:text-primary-hover transition-colors" 
+                      />
+                      <div>
+                        <h4 className="font-semibold text-foreground">{categoria.name}</h4>
+                        <p className="text-sm text-muted-foreground">{categoria.description}</p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Lista de Prestadores de Emergência */}
+          {categoriaEmergencia && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Prestadores de Emergência Disponíveis
+                </h3>
+                <button
+                  onClick={() => setCategoriaEmergencia(null)}
+                  className="text-sm text-primary hover:text-primary-hover transition-colors"
+                >
+                  ← Voltar à seleção
+                </button>
+              </div>
+
+              {emergenciaProviders.length > 0 ? (
+                <div className="space-y-3">
+                  {emergenciaProviders.map((provider) => (
+                    <div
+                      key={provider.id}
+                      className="p-4 border border-destructive/20 rounded-lg bg-destructive/5 hover:bg-destructive/10 transition-colors cursor-pointer"
+                      onClick={() => {
+                        setSelectedProvider(provider);
+                        setIsEmergenciaOpen(false);
+                      }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={provider.foto}
+                            alt={provider.nome}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                          <div>
+                            <h4 className="font-semibold text-foreground">{provider.nome}</h4>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
+                              <span>{provider.avaliacao}</span>
+                              <span>•</span>
+                              <span>{provider.distancia} km</span>
+                              <span>•</span>
+                              <span>{provider.tempoChegada}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm font-semibold text-foreground">{provider.preco}</div>
+                          <div className="flex items-center gap-1 text-xs">
+                            {provider.aberto24h && (
+                              <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full">
+                                24h
+                              </span>
+                            )}
+                            {provider.seloEssencial && (
+                              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                                Essencial
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <FontAwesomeIcon icon={faExclamationTriangle} className="text-4xl text-muted-foreground mb-4" />
+                  <h4 className="text-lg font-semibold text-foreground mb-2">
+                    Nenhum prestador disponível
+                  </h4>
+                  <p className="text-muted-foreground">
+                    Não há prestadores de {categoriasEmergencia.find(c => c.id === categoriaEmergencia)?.name} 
+                    disponíveis para emergência no momento.
+                  </p>
+                  <button
+                    onClick={() => setCategoriaEmergencia(null)}
+                    className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover transition-colors"
+                  >
+                    Escolher outra categoria
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Botão de Fechar */}
+          <div className="flex justify-end pt-4">
+            <Button
+              onClick={() => {
+                setIsEmergenciaOpen(false);
+                setCategoriaEmergencia(null);
+              }}
+              variant="outline"
+            >
+              Fechar
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
   // Modal de Detalhes do Prestador
   const ProviderModal = ({ provider }: { provider: Provider }) => (
     <div
@@ -858,7 +1028,10 @@ const Index = () => {
                 <FontAwesomeIcon icon={faLocationDot} className="text-xl" />
                 <span className="text-sm">Belo Horizonte</span>
               </div>
-              <button className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors">
+              <button 
+                onClick={handleSOSClick}
+                className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors"
+              >
                 <FontAwesomeIcon icon={faPhone} className="text-sm" />
                 <span className="text-sm font-medium">Emergência</span>
               </button>
@@ -991,7 +1164,10 @@ const Index = () => {
           <div className="p-4">
             <div className="flex items-center justify-between mb-3">
               <h1 className="text-2xl font-bold text-primary">Essenciais Já</h1>
-              <button className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors">
+              <button 
+                onClick={handleSOSClick}
+                className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors"
+              >
                 <FontAwesomeIcon icon={faPhone} className="text-sm" />
                 <span className="text-sm font-medium">Emergência</span>
               </button>
@@ -1085,6 +1261,9 @@ const Index = () => {
       
       {/* Modal de Login */}
       <LoginModal />
+      
+      {/* Modal de Emergência */}
+      <EmergenciaModal />
     </div>
   );
 };
