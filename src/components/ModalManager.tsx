@@ -34,7 +34,7 @@ const ModalManager: React.FC = () => {
           isOpen={true}
           onClose={closeModal}
           onLoginSuccess={modalProps.onLoginSuccess}
-          onOpenCadastro={() => navigateToModal('registerProvider')}
+          flow={modalProps.flow || 'client'}
         />
       );
 

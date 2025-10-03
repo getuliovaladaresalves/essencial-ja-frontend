@@ -71,7 +71,7 @@ const EntradaParceiroModal: React.FC<EntradaParceiroModalProps> = ({
           <div className="space-y-3">
             {/* Botão Principal - Login */}
             <Button
-              onClick={() => showModal('loginProvider')}
+              onClick={() => showModal('loginProvider', { flow: 'partner' })}
               className="w-full bg-primary hover:bg-primary-hover text-primary-foreground py-3 rounded-lg font-semibold text-base transition-colors"
             >
               <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />

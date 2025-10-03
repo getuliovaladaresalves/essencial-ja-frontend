@@ -7,15 +7,18 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { useModal } from '@/contexts/ModalContext';
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLoginSuccess: (userData: any) => void;
-  onOpenCadastro: () => void;
+  onOpenCadastro?: () => void;
+  flow?: 'client' | 'partner';
 }
 
-const LoginModal = ({ isOpen, onClose, onLoginSuccess, onOpenCadastro }: LoginModalProps) => {
+const LoginModal = ({ isOpen, onClose, onLoginSuccess, onOpenCadastro, flow = 'client' }: LoginModalProps) => {
+  const { showModal } = useModal();
   // Estado isolado do formulário
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -72,7 +75,16 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess, onOpenCadastro }: LoginMo
 
   const handleOpenCadastro = () => {
     handleClose();
-    onOpenCadastro();
+    if (onOpenCadastro) {
+      onOpenCadastro();
+    } else {
+      // Lógica baseada no flow
+      if (flow === 'partner') {
+        showModal('registerProvider');
+      } else {
+        showModal('registerClient');
+      }
+    }
   };
 
   return (
