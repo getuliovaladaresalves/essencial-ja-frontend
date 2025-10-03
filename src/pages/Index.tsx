@@ -546,7 +546,7 @@ const Index = () => {
         setUserType('provider');
         setUserData(data.user);
         
-        alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essenciais Já!');
+        alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essencial Já!');
         setIsCadastroOpen(false);
         
         // Limpar formulário
@@ -632,7 +632,7 @@ const Index = () => {
         setUserType('customer');
         setUserData(data.user);
         
-        alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essenciais Já!');
+        alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essencial Já!');
         setIsCustomerCadastroOpen(false);
         setCustomerData({ nome: '', email: '', telefone: '', endereco: '', senha: '', confirmarSenha: '' });
       } else {
@@ -1943,41 +1943,30 @@ const Index = () => {
 
       {/* Layout Mobile */}
       <div className="md:hidden min-h-screen pb-24">
-        {/* Header Mobile Refatorado */}
+        {/* Header Mobile - Layout de Duas Linhas */}
         <header className="sticky top-0 z-20 bg-white shadow-md border-b border-gray-200">
-          <div className="px-4 py-3">
+          {/* Seção Superior */}
+          <div className="px-4 py-3 border-b border-gray-100">
             <div className="flex items-center justify-between">
-              {/* Lado Esquerdo: Logótipo */}
-              <div className="flex items-center">
-                <Logo size="md" variant="horizontal" className="text-primary" />
+              {/* Seletor de Localização */}
+              <div className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faMapMarkerAlt} className="text-primary text-sm" />
+                <div className="text-left">
+                  <div className="text-xs text-gray-500">Entregar em:</div>
+                  <div className="text-sm font-semibold text-gray-900">Belo Horizonte, MG</div>
+                </div>
               </div>
               
-              {/* Lado Direito: Ações do Utilizador */}
-              <div className="flex items-center gap-2">
+              {/* Ícone de Perfil */}
+              <div className="flex items-center">
                 {!isLoggedIn ? (
-                  <>
-                    <button 
-                      onClick={() => setIsCustomerLoginOpen(true)}
-                      className="p-2 text-gray-600 hover:text-primary transition-colors rounded-full hover:bg-gray-100"
-                      title="Entrar"
-                    >
-                      <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
-                    </button>
-                    <button 
-                      onClick={() => setIsCustomerCadastroOpen(true)}
-                      className="p-2 bg-primary text-white rounded-full hover:bg-primary-hover transition-colors shadow-md"
-                      title="Criar Conta"
-                    >
-                      <FontAwesomeIcon icon={faUserPlus} className="w-4 h-4" />
-                    </button>
-                    <button 
-                      onClick={() => setIsLoginOpen(true)}
-                      className="p-2 text-primary hover:text-primary-hover transition-colors rounded-full hover:bg-primary/10"
-                      title="Sou Prestador"
-                    >
-                      <FontAwesomeIcon icon={faBuilding} className="w-4 h-4" />
-                    </button>
-                  </>
+                  <button 
+                    onClick={() => setIsCustomerLoginOpen(true)}
+                    className="p-2 text-gray-600 hover:text-primary transition-colors rounded-full hover:bg-gray-100"
+                    title="Entrar"
+                  >
+                    <FontAwesomeIcon icon={faUserCircle} className="w-6 h-6" />
+                  </button>
                 ) : (
                   <ProfileMenu
                     isLoggedIn={isLoggedIn}
@@ -1988,28 +1977,26 @@ const Index = () => {
               </div>
             </div>
           </div>
+
+          {/* Seção Inferior - Barra de Busca */}
+          <div className="px-4 py-3">
+            <div className="relative">
+              <FontAwesomeIcon
+                icon={faMagnifyingGlass}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+              <input
+                type="text"
+                placeholder="O que você precisa agora?"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 border-2 border-border rounded-xl bg-card text-card-foreground focus:outline-none focus:border-primary transition-all"
+              />
+            </div>
+          </div>
         </header>
 
         <main className="p-4 space-y-6">
-          {/* Seletor de Localização Mobile */}
-          <div className="flex justify-center">
-            <LocationSelector />
-          </div>
-
-          {/* Barra de busca Mobile */}
-          <div className="relative">
-            <FontAwesomeIcon
-              icon={faMagnifyingGlass}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
-            <input
-              type="text"
-              placeholder="O que você precisa agora?"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 border-2 border-border rounded-xl bg-card text-card-foreground focus:outline-none focus:border-primary transition-all"
-            />
-          </div>
 
           {/* Categorias Rápidas */}
           <div>

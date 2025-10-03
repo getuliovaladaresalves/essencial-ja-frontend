@@ -1,5 +1,5 @@
 # Script PowerShell para iniciar o servidor de desenvolvimento
-# Essenciais Já - Projeto de Serviços Essenciais
+# Essencial Já - Projeto de Serviços Essenciais
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "    ESSENCIAIS JA - SERVIDOR LOCAL" -ForegroundColor Cyan

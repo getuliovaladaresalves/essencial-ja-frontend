@@ -1,4 +1,4 @@
-# 🚀 Como Executar o Projeto Essenciais Já
+# 🚀 Como Executar o Projeto Essencial Já
 
 ## ⚡ Execução Rápida (3 opções)
 

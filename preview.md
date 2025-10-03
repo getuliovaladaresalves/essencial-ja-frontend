@@ -1,4 +1,4 @@
-# 🚀 Pré-visualização do Projeto Essenciais Já
+# 🚀 Pré-visualização do Projeto Essencial Já
 
 ## 📋 Instruções para Visualizar o Projeto
 

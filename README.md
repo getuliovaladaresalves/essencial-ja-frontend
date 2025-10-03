@@ -1,4 +1,4 @@
-# Essenciais Já - Versão 1.0
+# Essencial Já - Versão 1.0
 
 Uma aplicação web moderna para conectar usuários com prestadores de serviços essenciais como eletricistas, encanadores, chaveiros e borracheiros.
 
@@ -13,7 +13,7 @@ Uma aplicação web moderna para conectar usuários com prestadores de serviços
 
 ## 🚀 Sobre o Projeto
 
-O **Essenciais Já** é uma plataforma que facilita a busca e contratação de serviços essenciais, oferecendo:
+O **Essencial Já** é uma plataforma que facilita a busca e contratação de serviços essenciais, oferecendo:
 
 - 🔍 Busca inteligente por prestadores de serviços
 - 📍 Localização geográfica com mapa integrado

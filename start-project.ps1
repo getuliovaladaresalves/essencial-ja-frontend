@@ -1,4 +1,4 @@
-# Script PowerShell para iniciar o projeto Essenciais Já
+# Script PowerShell para iniciar o projeto Essencial Já
 # Autor: Desenvolvedor Sênior
 # Data: 2025-10-01
 
