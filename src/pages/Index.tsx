@@ -4,6 +4,7 @@ import { useModal } from '@/contexts/ModalContext';
 import Logo from '@/components/Logo';
 import LocationSelector from '@/components/LocationSelector';
 import ProfileMenu from '@/components/ProfileMenu';
+import TrackingView from '@/components/TrackingView';
 import {
   faMagnifyingGlass,
   faCar,
@@ -339,6 +340,10 @@ const Index = () => {
   const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'distance'>('relevance');
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
   
+  // Estado para controle de vistas da aplicação
+  const [appView, setAppView] = useState<'browsing' | 'tracking'>('browsing');
+  const [prestadorContratado, setPrestadorContratado] = useState<Provider | null>(null);
+  
   // Estado para emergência
   const [categoriaEmergencia, setCategoriaEmergencia] = useState<string | null>(null);
 
@@ -385,9 +390,8 @@ const Index = () => {
     confirmarSenha: '',
   });
 
-  // Estados para fluxo de contratação
+  // Estados para fluxo de contratação (legado - será removido)
   const [fluxoEtapa, setFluxoEtapa] = useState<'nenhum' | 'confirmacao' | 'aguardando' | 'rastreamento'>('nenhum');
-  const [prestadorContratado, setPrestadorContratado] = useState<Provider | null>(null);
   const [detalhesAdicionais, setDetalhesAdicionais] = useState('');
 
   // Estados para interatividade
@@ -1551,8 +1555,10 @@ const Index = () => {
           {/* Botão de Ação */}
           <button 
             onClick={() => {
-              setPrestadorContratado(selectedProvider);
-              setFluxoEtapa('confirmacao');
+              showModal('confirmacao', { 
+                prestador: provider,
+                onConfirm: () => handleConfirmarContratacao(provider)
+              });
               setSelectedProvider(null);
             }}
             className="w-full bg-primary hover:bg-primary-hover text-primary-foreground py-4 rounded-lg font-bold text-lg transition-colors"
@@ -1706,13 +1712,26 @@ const Index = () => {
     );
   };
 
-  // Renderização condicional baseada no fluxo
-  if (fluxoEtapa === 'rastreamento') {
-    return <TelaRastreamento />;
-  }
+  // Função para confirmar contratação e ir para tracking
+  const handleConfirmarContratacao = (prestador: Provider) => {
+    setPrestadorContratado(prestador);
+    setAppView('tracking');
+  };
 
-  if (fluxoEtapa === 'aguardando') {
-    return <TelaAguardando />;
+  // Função para cancelar tracking e voltar para browsing
+  const handleCancelarTracking = () => {
+    setAppView('browsing');
+    setPrestadorContratado(null);
+  };
+
+  // Renderização condicional baseada na vista da aplicação
+  if (appView === 'tracking' && prestadorContratado) {
+    return (
+      <TrackingView
+        prestador={prestadorContratado}
+        onCancel={handleCancelarTracking}
+      />
+    );
   }
 
   return (

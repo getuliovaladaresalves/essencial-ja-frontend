@@ -3,6 +3,7 @@ import { useModal } from '@/contexts/ModalContext';
 import LoginModal from './LoginModal';
 import LocationSelector from './LocationSelector';
 import ProfileMenu from './ProfileMenu';
+import ConfirmacaoModal from './ConfirmacaoModal';
 
 // Importar os modais existentes (serão refatorados para usar o contexto)
 // Por enquanto, vamos criar placeholders que serão substituídos
@@ -141,6 +142,21 @@ const ModalManager: React.FC = () => {
             </div>
           </div>
         </div>
+      );
+
+    case 'confirmacao':
+      return (
+        <ConfirmacaoModal
+          prestador={modalProps.prestador}
+          onClose={closeModal}
+          onConfirm={() => {
+            closeModal();
+            // A transição para tracking será feita no componente pai
+            if (modalProps.onConfirm) {
+              modalProps.onConfirm();
+            }
+          }}
+        />
       );
 
     default:
