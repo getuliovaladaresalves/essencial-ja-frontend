@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { useModal } from '@/contexts/ModalContext';
 import { useCPF } from '@/lib/cpfValidator';
 import { usePhone } from '@/lib/phoneValidator';
+import { useEmail } from '@/lib/emailValidator';
 
 interface RegisterClientModalProps {
   onClose: () => void;
@@ -29,7 +30,6 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
   // Estados do formulário
   const [formData, setFormData] = useState({
     nome: '',
-    email: '',
     senha: '',
     confirmarSenha: '',
     endereco: ''
@@ -38,6 +38,7 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
   // Hooks para validação
   const cpfHook = useCPF();
   const phoneHook = usePhone();
+  const emailHook = useEmail();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -53,7 +54,6 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
     const newErrors: Record<string, string> = {};
 
     if (!formData.nome.trim()) newErrors.nome = 'Nome é obrigatório';
-    if (!formData.email.trim()) newErrors.email = 'E-mail é obrigatório';
     if (!formData.senha) newErrors.senha = 'Senha é obrigatória';
     if (formData.senha.length < 6) newErrors.senha = 'Senha deve ter no mínimo 6 caracteres';
     if (formData.senha !== formData.confirmarSenha) newErrors.confirmarSenha = 'Senhas não coincidem';
@@ -67,6 +67,11 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
     // Validar telefone
     if (!phoneHook.validate()) {
       newErrors.telefone = phoneHook.error;
+    }
+    
+    // Validar e-mail
+    if (!emailHook.validate()) {
+      newErrors.email = emailHook.error;
     }
 
     setErrors(newErrors);
@@ -90,7 +95,7 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
         },
         body: JSON.stringify({
           nome: formData.nome,
-          email: formData.email,
+          email: emailHook.value, // E-mail já validado e formatado
           senha: formData.senha,
           telefone: phoneHook.value.replace(/\D/g, ''), // Enviar telefone sem formatação
           endereco: formData.endereco,
@@ -164,13 +169,13 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
             </label>
             <Input
               type="email"
-              value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
+              value={emailHook.value}
+              onChange={(e) => emailHook.handleChange(e.target.value)}
               placeholder="seu@email.com"
-              className={errors.email ? 'border-destructive' : ''}
+              className={emailHook.error ? 'border-destructive' : ''}
               disabled={isLoading}
             />
-            {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
+            {emailHook.error && <p className="text-sm text-destructive mt-1">{emailHook.error}</p>}
           </div>
 
           {/* CPF */}
