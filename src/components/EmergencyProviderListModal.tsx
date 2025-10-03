@@ -210,44 +210,47 @@ const EmergencyProviderListModal: React.FC<EmergencyProviderListModalProps> = ({
                       key={provider.id}
                       className="border border-destructive/20 rounded-lg bg-destructive/5 p-4 hover:bg-destructive/10 transition-colors"
                     >
-                      <div className="flex items-start justify-between">
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        {/* Avatar e Info Principal */}
                         <div className="flex items-start gap-4 flex-1">
                           {/* Avatar */}
-                          <div className="relative">
-                            <img
-                              src={provider.foto}
-                              alt={provider.nome}
-                              className="w-16 h-16 rounded-full object-cover border-2 border-destructive/30"
-                            />
+                          <div className="relative flex-shrink-0">
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center border-2 border-destructive/30">
+                              <FontAwesomeIcon icon={faUser} className="text-2xl text-primary" />
+                            </div>
                             {provider.parceiroPro && (
-                              <div className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs px-1 rounded-full">
+                              <div className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
                                 PRO
                               </div>
                             )}
                           </div>
 
                           {/* Info */}
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-bold text-lg text-foreground">{provider.nome}</h3>
-                              {provider.seloEssencial && (
-                                <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
-                                  <FontAwesomeIcon icon={faShield} className="mr-1" />
-                                  Selo Essencial
-                                </span>
-                              )}
-                              {provider.aberto24h && (
-                                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
-                                  <FontAwesomeIcon icon={faClock} className="mr-1" />
-                                  24h
-                                </span>
-                              )}
+                          <div className="flex-1 min-w-0">
+                            {/* Nome e Badges */}
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                              <h3 className="font-bold text-lg text-foreground truncate">{provider.nome}</h3>
+                              <div className="flex flex-wrap gap-1">
+                                {provider.seloEssencial && (
+                                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium flex items-center gap-1">
+                                    <FontAwesomeIcon icon={faShield} className="text-xs" />
+                                    Selo Essencial
+                                  </span>
+                                )}
+                                {provider.aberto24h && (
+                                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium flex items-center gap-1">
+                                    <FontAwesomeIcon icon={faClock} className="text-xs" />
+                                    24h
+                                  </span>
+                                )}
+                              </div>
                             </div>
 
-                            <p className="text-muted-foreground mb-3">{provider.descricao}</p>
+                            {/* Descrição */}
+                            <p className="text-muted-foreground text-sm mb-3 line-clamp-2">{provider.descricao}</p>
 
                             {/* Stats */}
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-3">
                               <div className="flex items-center gap-1">
                                 <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
                                 <span className="font-medium">{provider.avaliacao}</span>
@@ -262,15 +265,16 @@ const EmergencyProviderListModal: React.FC<EmergencyProviderListModalProps> = ({
                               </div>
                             </div>
 
+                            {/* Preço */}
                             <div className="text-lg font-bold text-primary">{provider.preco}</div>
                           </div>
                         </div>
 
                         {/* Actions */}
-                        <div className="flex flex-col gap-2 ml-4">
+                        <div className="flex flex-col sm:flex-col gap-2 sm:min-w-[140px]">
                           <Button
                             onClick={() => handleCallProvider(provider)}
-                            className="bg-destructive hover:bg-destructive/90 text-destructive-foreground flex items-center gap-2"
+                            className="bg-destructive hover:bg-destructive/90 text-destructive-foreground flex items-center justify-center gap-2 text-sm py-2"
                           >
                             <FontAwesomeIcon icon={faPhone} />
                             Ligar Agora
@@ -278,7 +282,7 @@ const EmergencyProviderListModal: React.FC<EmergencyProviderListModalProps> = ({
                           <Button
                             variant="outline"
                             onClick={() => handleSelectProvider(provider)}
-                            className="flex items-center gap-2"
+                            className="flex items-center justify-center gap-2 text-sm py-2"
                           >
                             <FontAwesomeIcon icon={faUser} />
                             Ver Detalhes
