@@ -5,19 +5,19 @@ const API_CONFIG = {
     timeout: 10000,
   },
   production: {
-    baseURL: process.env.REACT_APP_API_URL || 'https://essencial-ja-api.vercel.app',
+    baseURL: import.meta.env.VITE_API_URL || 'https://essencial-ja-backend.vercel.app',
     timeout: 15000,
   },
   vercel: {
-    baseURL: process.env.REACT_APP_API_URL || 'https://essencial-ja-api.vercel.app',
+    baseURL: import.meta.env.VITE_API_URL || 'https://essencial-ja-backend.vercel.app',
     timeout: 15000,
   }
 };
 
 // Determinar ambiente
 const getEnvironment = (): keyof typeof API_CONFIG => {
-  if (process.env.NODE_ENV === 'production') {
-    if (process.env.REACT_APP_DEPLOY_TARGET === 'vercel') {
+  if (import.meta.env.PROD) {
+    if (import.meta.env.VITE_DEPLOY_TARGET === 'vercel') {
       return 'vercel';
     }
     return 'production';
