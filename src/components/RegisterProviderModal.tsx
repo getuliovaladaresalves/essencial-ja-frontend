@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useModal } from '@/contexts/ModalContext';
 import { useCPF } from '@/lib/cpfValidator';
+import { usePhone } from '@/lib/phoneValidator';
 
 interface RegisterProviderModalProps {
   onClose: () => void;
@@ -37,7 +38,6 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
     email: '',
     senha: '',
     confirmarSenha: '',
-    telefone: '',
     endereco: '',
     descricao: '',
     horarioFuncionamento: '',
@@ -47,8 +47,9 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
     atendimento24h: false
   });
 
-  // Hook para validação de CPF
+  // Hooks para validação
   const cpfHook = useCPF();
+  const phoneHook = usePhone();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -68,13 +69,17 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
     if (!formData.senha) newErrors.senha = 'Senha é obrigatória';
     if (formData.senha.length < 6) newErrors.senha = 'Senha deve ter no mínimo 6 caracteres';
     if (formData.senha !== formData.confirmarSenha) newErrors.confirmarSenha = 'Senhas não coincidem';
-    if (!formData.telefone.trim()) newErrors.telefone = 'Telefone é obrigatório';
     if (!formData.endereco.trim()) newErrors.endereco = 'Endereço é obrigatório';
     if (!formData.descricao.trim()) newErrors.descricao = 'Descrição é obrigatória';
     
     // Validar CPF
     if (!cpfHook.validate()) {
       newErrors.cpf = cpfHook.error;
+    }
+    
+    // Validar telefone
+    if (!phoneHook.validate()) {
+      newErrors.telefone = phoneHook.error;
     }
 
     setErrors(newErrors);
@@ -100,7 +105,7 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
           nome: formData.nome,
           email: formData.email,
           senha: formData.senha,
-          telefone: formData.telefone,
+          telefone: phoneHook.value.replace(/\D/g, ''), // Enviar telefone sem formatação
           endereco: formData.endereco,
           descricao: formData.descricao,
           horarioFuncionamento: formData.horarioFuncionamento,
@@ -249,13 +254,14 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
               </label>
               <Input
                 type="tel"
-                value={formData.telefone}
-                onChange={(e) => handleInputChange('telefone', e.target.value)}
+                value={phoneHook.value}
+                onChange={(e) => phoneHook.handleChange(e.target.value)}
                 placeholder="(11) 99999-9999"
-                className={errors.telefone ? 'border-destructive' : ''}
+                className={phoneHook.error ? 'border-destructive' : ''}
                 disabled={isLoading}
+                maxLength={15}
               />
-              {errors.telefone && <p className="text-sm text-destructive mt-1">{errors.telefone}</p>}
+              {phoneHook.error && <p className="text-sm text-destructive mt-1">{phoneHook.error}</p>}
             </div>
           </div>
 

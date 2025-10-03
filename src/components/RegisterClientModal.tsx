@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useModal } from '@/contexts/ModalContext';
 import { useCPF } from '@/lib/cpfValidator';
+import { usePhone } from '@/lib/phoneValidator';
 
 interface RegisterClientModalProps {
   onClose: () => void;
@@ -31,12 +32,12 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
     email: '',
     senha: '',
     confirmarSenha: '',
-    telefone: '',
     endereco: ''
   });
 
-  // Hook para validação de CPF
+  // Hooks para validação
   const cpfHook = useCPF();
+  const phoneHook = usePhone();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -56,12 +57,16 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
     if (!formData.senha) newErrors.senha = 'Senha é obrigatória';
     if (formData.senha.length < 6) newErrors.senha = 'Senha deve ter no mínimo 6 caracteres';
     if (formData.senha !== formData.confirmarSenha) newErrors.confirmarSenha = 'Senhas não coincidem';
-    if (!formData.telefone.trim()) newErrors.telefone = 'Telefone é obrigatório';
     if (!formData.endereco.trim()) newErrors.endereco = 'Endereço é obrigatório';
     
     // Validar CPF
     if (!cpfHook.validate()) {
       newErrors.cpf = cpfHook.error;
+    }
+    
+    // Validar telefone
+    if (!phoneHook.validate()) {
+      newErrors.telefone = phoneHook.error;
     }
 
     setErrors(newErrors);
@@ -87,7 +92,7 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
           nome: formData.nome,
           email: formData.email,
           senha: formData.senha,
-          telefone: formData.telefone,
+          telefone: phoneHook.value.replace(/\D/g, ''), // Enviar telefone sem formatação
           endereco: formData.endereco,
           cpf: cpfHook.value.replace(/\D/g, '') // Enviar CPF sem formatação
         }),
@@ -224,13 +229,14 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
             </label>
             <Input
               type="tel"
-              value={formData.telefone}
-              onChange={(e) => handleInputChange('telefone', e.target.value)}
+              value={phoneHook.value}
+              onChange={(e) => phoneHook.handleChange(e.target.value)}
               placeholder="(11) 99999-9999"
-              className={errors.telefone ? 'border-destructive' : ''}
+              className={phoneHook.error ? 'border-destructive' : ''}
               disabled={isLoading}
+              maxLength={15}
             />
-            {errors.telefone && <p className="text-sm text-destructive mt-1">{errors.telefone}</p>}
+            {phoneHook.error && <p className="text-sm text-destructive mt-1">{phoneHook.error}</p>}
           </div>
 
           {/* Endereço */}
