@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useModal } from '@/contexts/ModalContext';
 import Logo from '@/components/Logo';
-import LoginModal from '@/components/LoginModal';
 import LocationSelector from '@/components/LocationSelector';
 import ProfileMenu from '@/components/ProfileMenu';
 import {
@@ -325,6 +325,9 @@ const quickCategories = [
 ];
 
 const Index = () => {
+  // Hook do contexto de modais
+  const { showModal } = useModal();
+
   // Estado da aplicação
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -336,8 +339,7 @@ const Index = () => {
   const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'distance'>('relevance');
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
   
-  // Estado centralizado dos modais
-  const [activeModal, setActiveModal] = useState<string | null>(null);
+  // Estado para emergência
   const [categoriaEmergencia, setCategoriaEmergencia] = useState<string | null>(null);
 
   // Dados dos formulários
@@ -468,7 +470,7 @@ const Index = () => {
   };
 
   const handleSOSClick = () => {
-    setActiveModal('emergency');
+    showModal('emergency');
   };
 
   // Lógica para prestadores de emergência
@@ -541,7 +543,7 @@ const Index = () => {
         setUserData(data.user);
         
         alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essencial Já!');
-        setActiveModal(null);
+        showModal(null);
         
     // Limpar formulário
     setCadastroData({
@@ -580,7 +582,7 @@ const Index = () => {
     setIsLoggedIn(true);
     setUserType('provider');
     setUserData(userData);
-    setActiveModal(null);
+    showModal(null);
   };
 
   // Funções para usuários finais
@@ -627,7 +629,7 @@ const Index = () => {
         setUserData(data.user);
         
         alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essencial Já!');
-        setActiveModal(null);
+        showModal(null);
         setCustomerData({ nome: '', email: '', telefone: '', endereco: '', senha: '', confirmarSenha: '' });
       } else {
         const errorData = await response.json();
@@ -671,7 +673,7 @@ const Index = () => {
         setUserData(data.user);
         
         alert('✅ Login realizado com sucesso!\n\nBem-vindo de volta!');
-        setActiveModal(null);
+        showModal(null);
       } else {
         const errorData = await response.json();
         alert(`❌ Erro no login: ${errorData.message}`);
@@ -792,7 +794,7 @@ const Index = () => {
 
   // Modal de Cadastro de Prestador
   const CadastroModal = ({ onClose, onOpenLogin }: { onClose: () => void; onOpenLogin: () => void }) => (
-    <Dialog open={activeModal === 'registerProvider'} onOpenChange={onClose}>
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
@@ -1013,7 +1015,7 @@ const Index = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setActiveModal(null)}
+              onClick={() => showModal(null)}
               className="flex-1"
             >
               Cancelar
@@ -1044,7 +1046,7 @@ const Index = () => {
 
   // Modal de Emergência
   const EmergenciaModal = ({ onClose }: { onClose: () => void }) => (
-    <Dialog open={activeModal === 'emergency'} onOpenChange={onClose}>
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl text-destructive">
@@ -1109,7 +1111,7 @@ const Index = () => {
                       className="p-4 border border-destructive/20 rounded-lg bg-destructive/5 hover:bg-destructive/10 transition-colors cursor-pointer"
                       onClick={() => {
                         setSelectedProvider(provider);
-                        setActiveModal(null);
+                        showModal(null);
                       }}
                     >
                       <div className="flex items-center justify-between">
@@ -1175,7 +1177,7 @@ const Index = () => {
           <div className="flex justify-end pt-4">
             <Button
               onClick={() => {
-                setActiveModal(null);
+                showModal(null);
                 setCategoriaEmergencia(null);
               }}
               variant="outline"
@@ -1190,7 +1192,7 @@ const Index = () => {
 
   // Modal de Cadastro de Cliente
   const CustomerCadastroModal = ({ onClose, onOpenLogin }: { onClose: () => void; onOpenLogin: () => void }) => (
-    <Dialog open={activeModal === 'registerClient'} onOpenChange={onClose}>
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
@@ -1329,7 +1331,7 @@ const Index = () => {
 
   // Modal de Login de Cliente
   const CustomerLoginModal = ({ onClose, onOpenCadastro }: { onClose: () => void; onOpenCadastro: () => void }) => (
-    <Dialog open={activeModal === 'loginClient'} onOpenChange={onClose}>
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
@@ -1737,7 +1739,7 @@ const Index = () => {
                   <>
                     {/* Link "Seja um Parceiro" - apenas desktop */}
                     <button 
-                      onClick={() => setActiveModal('registerProvider')}
+                      onClick={() => showModal('registerProvider')}
                       className="hidden md:block text-sm text-primary hover:text-primary-hover transition-colors font-medium"
                     >
                       Seja um Parceiro
@@ -1745,13 +1747,13 @@ const Index = () => {
                     
                     {/* Botões de Login/Cadastro */}
                     <button 
-                      onClick={() => setActiveModal('loginClient')}
+                      onClick={() => showModal('loginClient')}
                       className="text-sm text-gray-700 hover:text-primary transition-colors font-medium"
                     >
                       Entrar
                     </button>
                     <button 
-                      onClick={() => setActiveModal('registerClient')}
+                      onClick={() => showModal('registerClient')}
                       className="px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-primary-hover transition-colors font-medium"
                     >
                       Criar Conta
@@ -1948,7 +1950,7 @@ const Index = () => {
               <div className="flex items-center">
                 {!isLoggedIn ? (
                     <button 
-                      onClick={() => setActiveModal('loginClient')}
+                      onClick={() => showModal('loginClient')}
                     className="p-2 text-gray-600 hover:text-primary transition-colors rounded-full hover:bg-gray-100"
                       title="Entrar"
                     >
@@ -2061,43 +2063,6 @@ const Index = () => {
 
       {/* Modal de Detalhes */}
       {selectedProvider && <ProviderModal provider={selectedProvider} />}
-      
-      {/* Modais Centralizados */}
-      {activeModal === 'registerProvider' && (
-        <CadastroModal 
-          onClose={() => setActiveModal(null)}
-          onOpenLogin={() => setActiveModal('loginProvider')}
-        />
-      )}
-      
-      {activeModal === 'loginProvider' && (
-        <LoginModal
-          isOpen={true}
-          onClose={() => setActiveModal(null)}
-          onLoginSuccess={handleLoginSuccess}
-          onOpenCadastro={() => setActiveModal('registerProvider')}
-        />
-      )}
-      
-      {activeModal === 'emergency' && (
-        <EmergenciaModal 
-          onClose={() => setActiveModal(null)}
-        />
-      )}
-      
-      {activeModal === 'registerClient' && (
-        <CustomerCadastroModal 
-          onClose={() => setActiveModal(null)}
-          onOpenLogin={() => setActiveModal('loginClient')}
-        />
-      )}
-      
-      {activeModal === 'loginClient' && (
-        <CustomerLoginModal 
-          onClose={() => setActiveModal(null)}
-          onOpenCadastro={() => setActiveModal('registerClient')}
-        />
-      )}
       
       {/* Componentes do Fluxo de Contratação - Renderizados condicionalmente */}
       {fluxoEtapa === 'confirmacao' && <ModalConfirmacao />}
