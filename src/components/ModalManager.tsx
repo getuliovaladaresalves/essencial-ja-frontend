@@ -4,6 +4,7 @@ import LoginModal from './LoginModal';
 import LocationSelector from './LocationSelector';
 import ProfileMenu from './ProfileMenu';
 import ConfirmacaoModal from './ConfirmacaoModal';
+import EntradaParceiroModal from './EntradaParceiroModal';
 
 // Importar os modais existentes (serão refatorados para usar o contexto)
 // Por enquanto, vamos criar placeholders que serão substituídos
@@ -20,6 +21,15 @@ const ModalManager: React.FC = () => {
   };
 
   switch (activeModal) {
+    case 'entradaParceiro':
+      return (
+        <EntradaParceiroModal
+          onClose={closeModal}
+          onLogin={() => navigateToModal('loginProvider')}
+          onRegister={() => navigateToModal('registerProvider')}
+        />
+      );
+
     case 'loginProvider':
       return (
         <LoginModal

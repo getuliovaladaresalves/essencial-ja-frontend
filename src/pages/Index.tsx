@@ -1758,7 +1758,7 @@ const Index = () => {
                   <>
                     {/* Link "Seja um Parceiro" - apenas desktop */}
                     <button 
-                      onClick={() => showModal('registerProvider')}
+                      onClick={() => showModal('entradaParceiro')}
                       className="hidden md:block text-sm text-primary hover:text-primary-hover transition-colors font-medium"
                     >
                       Seja um Parceiro
