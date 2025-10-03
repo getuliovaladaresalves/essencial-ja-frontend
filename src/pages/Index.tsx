@@ -1564,7 +1564,7 @@ const Index = () => {
 
   // Modal de Confirmação do Fluxo
   const ModalConfirmacao = () => {
-    if (fluxoEtapa !== 'confirmacao' || !prestadorContratado) return null;
+    if (!prestadorContratado) return null;
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -1636,7 +1636,6 @@ const Index = () => {
 
   // Tela de Aguardando
   const TelaAguardando = () => {
-    if (fluxoEtapa !== 'aguardando') return null;
 
     return (
       <div className="fixed inset-0 bg-background flex items-center justify-center z-50">
@@ -1651,7 +1650,7 @@ const Index = () => {
 
   // Tela de Rastreamento
   const TelaRastreamento = () => {
-    if (fluxoEtapa !== 'rastreamento' || !prestadorContratado) return null;
+    if (!prestadorContratado) return null;
 
     return (
       <div className="fixed inset-0 bg-background z-50 flex flex-col">
@@ -2100,10 +2099,8 @@ const Index = () => {
         />
       )}
       
-      {/* Componentes do Fluxo de Contratação */}
-      <ModalConfirmacao />
-      <TelaAguardando />
-      <TelaRastreamento />
+      {/* Componentes do Fluxo de Contratação - Renderizados condicionalmente */}
+      {fluxoEtapa === 'confirmacao' && <ModalConfirmacao />}
     </div>
   );
 };
