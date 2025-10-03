@@ -1985,10 +1985,6 @@ const Index = () => {
           {/* Seção Inferior - Barra de Busca */}
           <div className="px-4 py-3">
           <div className="relative">
-            <FontAwesomeIcon
-              icon={faMagnifyingGlass}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
             <input
               type="text"
               placeholder="O que você precisa agora?"
@@ -2000,7 +1996,7 @@ const Index = () => {
                   // Aqui podemos adicionar lógica adicional se necessário
                 }
               }}
-              className="w-full pl-12 pr-20 py-3 border-2 border-border rounded-xl bg-card text-card-foreground focus:outline-none focus:border-primary transition-all"
+              className="w-full pl-4 pr-20 py-3 border-2 border-border rounded-xl bg-card text-card-foreground focus:outline-none focus:border-primary transition-all"
             />
             
             {/* Botão de Limpar (X) */}
