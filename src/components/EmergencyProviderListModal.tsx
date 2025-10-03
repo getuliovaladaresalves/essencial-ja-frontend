@@ -18,6 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { useAuthGuard } from '@/hooks/useAuthGuard';
 
 interface Provider {
   id: number;
@@ -48,6 +49,8 @@ const EmergencyProviderListModal: React.FC<EmergencyProviderListModalProps> = ({
   onBack,
   onSelectProvider
 }) => {
+  // Hook para verificação de autenticação
+  const { withAuthGuard } = useAuthGuard();
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -273,7 +276,7 @@ const EmergencyProviderListModal: React.FC<EmergencyProviderListModalProps> = ({
                         {/* Actions */}
                         <div className="flex flex-col sm:flex-col gap-2 sm:min-w-[140px]">
                           <Button
-                            onClick={() => handleCallProvider(provider)}
+                            onClick={withAuthGuard(() => handleCallProvider(provider), 'client')}
                             className="bg-destructive hover:bg-destructive/90 text-destructive-foreground flex items-center justify-center gap-2 text-sm py-2"
                           >
                             <FontAwesomeIcon icon={faPhone} />
@@ -281,7 +284,7 @@ const EmergencyProviderListModal: React.FC<EmergencyProviderListModalProps> = ({
                           </Button>
                           <Button
                             variant="outline"
-                            onClick={() => handleSelectProvider(provider)}
+                            onClick={withAuthGuard(() => handleSelectProvider(provider), 'client')}
                             className="flex items-center justify-center gap-2 text-sm py-2"
                           >
                             <FontAwesomeIcon icon={faUser} />

@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useModal } from '@/contexts/ModalContext';
+import { useAuthGuard } from '@/hooks/useAuthGuard';
 import Logo from '@/components/Logo';
 import LocationSelector from '@/components/LocationSelector';
 import ProfileMenu from '@/components/ProfileMenu';
@@ -328,6 +329,9 @@ const quickCategories = [
 const Index = () => {
   // Hook do contexto de modais
   const { showModal } = useModal();
+  
+  // Hook para verificação de autenticação
+  const { withAuthGuard } = useAuthGuard();
 
   // Estado da aplicação
   const [searchTerm, setSearchTerm] = useState('');
@@ -1554,13 +1558,13 @@ const Index = () => {
 
           {/* Botão de Ação */}
           <button 
-            onClick={() => {
+            onClick={withAuthGuard(() => {
               showModal('confirmacao', { 
                 prestador: provider,
                 onConfirm: () => handleConfirmarContratacao(provider)
               });
               setSelectedProvider(null);
-            }}
+            }, 'client')}
             className="w-full bg-primary hover:bg-primary-hover text-primary-foreground py-4 rounded-lg font-bold text-lg transition-colors"
           >
             Contratar Serviço
