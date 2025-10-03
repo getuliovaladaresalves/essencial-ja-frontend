@@ -35,6 +35,8 @@ import {
   faCog,
   faSignOutAlt,
   faBars,
+  faRightFromBracket,
+  faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Importação das imagens geradas
@@ -367,6 +369,9 @@ const Index = () => {
     avatar: '',
   });
 
+  // Estados de carregamento
+  const [isLoading, setIsLoading] = useState(false);
+
   // Estados para modais de usuário final
   const [isCustomerCadastroOpen, setIsCustomerCadastroOpen] = useState(false);
   const [isCustomerLoginOpen, setIsCustomerLoginOpen] = useState(false);
@@ -396,6 +401,25 @@ const Index = () => {
       return () => clearTimeout(timer);
     }
   }, [fluxoEtapa]);
+
+  // Persistência de sessão - verificar token no localStorage ao carregar
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      // Se existe token, considerar usuário logado
+      setIsLoggedIn(true);
+      setUserType('customer');
+      // Recuperar dados do usuário do localStorage se disponível
+      const savedUserData = localStorage.getItem('userData');
+      if (savedUserData) {
+        try {
+          setUserData(JSON.parse(savedUserData));
+        } catch (error) {
+          console.error('Erro ao recuperar dados do usuário:', error);
+        }
+      }
+    }
+  }, []);
 
   // Lógica de filtro e ordenação
   const filteredAndSortedProviders = useMemo(() => {
@@ -490,17 +514,50 @@ const Index = () => {
   };
 
   // Funções para o formulário de login
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui você pode adicionar a lógica para autenticação
-    console.log('Dados do login:', loginData);
-    alert('✅ Login realizado com sucesso!\n\nBem-vindo de volta!');
-    setIsLoginOpen(false);
-    // Limpar formulário
-    setLoginData({
-      email: '',
-      senha: '',
-    });
+    setIsLoading(true);
+    
+    try {
+      // Simular chamada à API
+      const response = await fetch('https://essencial-ja-backend.vercel.app/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Salvar token no localStorage
+        localStorage.setItem('authToken', data.access_token);
+        localStorage.setItem('userData', JSON.stringify(data.user));
+        
+        // Atualizar estado
+        setIsLoggedIn(true);
+        setUserType('provider');
+        setUserData(data.user);
+        
+        alert('✅ Login realizado com sucesso!\n\nBem-vindo de volta!');
+        setIsLoginOpen(false);
+        
+        // Limpar formulário
+        setLoginData({
+          email: '',
+          senha: '',
+        });
+      } else {
+        const errorData = await response.json();
+        alert(`❌ Erro no login: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Erro no login:', error);
+      alert('❌ Erro de conexão. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleLoginChange = (field: string, value: string) => {
@@ -508,35 +565,92 @@ const Index = () => {
   };
 
   // Funções para usuários finais
-  const handleCustomerCadastroSubmit = (e: React.FormEvent) => {
+  const handleCustomerCadastroSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Cadastro de cliente:', customerData);
-    alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essenciais Já!');
-    setIsCustomerCadastroOpen(false);
-    setIsLoggedIn(true);
-    setUserType('customer');
-    setUserData({
-      nome: customerData.nome,
-      email: customerData.email,
-      tipo: 'customer',
-      avatar: '',
-    });
-    setCustomerData({ nome: '', email: '', telefone: '', endereco: '' });
+    setIsLoading(true);
+    
+    try {
+      // Simular chamada à API
+      const response = await fetch('https://essencial-ja-backend.vercel.app/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome: customerData.nome,
+          email: customerData.email,
+          senha: '123456', // Senha padrão para demonstração
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Salvar token no localStorage
+        localStorage.setItem('authToken', data.access_token);
+        localStorage.setItem('userData', JSON.stringify(data.user));
+        
+        // Atualizar estado
+        setIsLoggedIn(true);
+        setUserType('customer');
+        setUserData(data.user);
+        
+        alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essenciais Já!');
+        setIsCustomerCadastroOpen(false);
+        setCustomerData({ nome: '', email: '', telefone: '', endereco: '' });
+      } else {
+        const errorData = await response.json();
+        alert(`❌ Erro no cadastro: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Erro no cadastro:', error);
+      alert('❌ Erro de conexão. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleCustomerLoginSubmit = (e: React.FormEvent) => {
+  const handleCustomerLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login de cliente:', customerData);
-    alert('✅ Login realizado com sucesso!\n\nBem-vindo de volta!');
-    setIsCustomerLoginOpen(false);
-    setIsLoggedIn(true);
-    setUserType('customer');
-    setUserData({
-      nome: customerData.nome,
-      email: customerData.email,
-      tipo: 'customer',
-      avatar: '',
-    });
+    setIsLoading(true);
+    
+    try {
+      // Simular chamada à API
+      const response = await fetch('https://essencial-ja-backend.vercel.app/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: customerData.email,
+          senha: customerData.telefone, // Usando telefone como senha para demonstração
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Salvar token no localStorage
+        localStorage.setItem('authToken', data.access_token);
+        localStorage.setItem('userData', JSON.stringify(data.user));
+        
+        // Atualizar estado
+        setIsLoggedIn(true);
+        setUserType('customer');
+        setUserData(data.user);
+        
+        alert('✅ Login realizado com sucesso!\n\nBem-vindo de volta!');
+        setIsCustomerLoginOpen(false);
+      } else {
+        const errorData = await response.json();
+        alert(`❌ Erro no login: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Erro no login:', error);
+      alert('❌ Erro de conexão. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCustomerChange = (field: string, value: string) => {
@@ -544,6 +658,11 @@ const Index = () => {
   };
 
   const handleLogout = () => {
+    // Remover token do localStorage
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
+    
+    // Redefinir estado de autenticação
     setIsLoggedIn(false);
     setUserType('guest');
     setUserData({ nome: '', email: '', tipo: 'customer', avatar: '' });
@@ -907,15 +1026,26 @@ const Index = () => {
               variant="outline"
               onClick={() => setIsLoginOpen(false)}
               className="flex-1"
+              disabled={isLoading}
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               className="flex-1 bg-primary hover:bg-primary-hover"
+              disabled={isLoading}
             >
-              <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
-              Entrar
+              {isLoading ? (
+                <>
+                  <FontAwesomeIcon icon={faSpinner} className="mr-2 animate-spin" />
+                  A processar...
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
+                  Entrar
+                </>
+              )}
             </Button>
           </div>
         </form>
@@ -1158,15 +1288,26 @@ const Index = () => {
               variant="outline"
               onClick={() => setIsCustomerCadastroOpen(false)}
               className="flex-1"
+              disabled={isLoading}
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               className="flex-1 bg-primary hover:bg-primary-hover"
+              disabled={isLoading}
             >
-              <FontAwesomeIcon icon={faUserPlus} className="mr-2" />
-              Criar Conta
+              {isLoading ? (
+                <>
+                  <FontAwesomeIcon icon={faSpinner} className="mr-2 animate-spin" />
+                  A processar...
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faUserPlus} className="mr-2" />
+                  Criar Conta
+                </>
+              )}
             </Button>
           </div>
         </form>
@@ -1243,15 +1384,26 @@ const Index = () => {
               variant="outline"
               onClick={() => setIsCustomerLoginOpen(false)}
               className="flex-1"
+              disabled={isLoading}
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               className="flex-1 bg-primary hover:bg-primary-hover"
+              disabled={isLoading}
             >
-              <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
-              Entrar
+              {isLoading ? (
+                <>
+                  <FontAwesomeIcon icon={faSpinner} className="mr-2 animate-spin" />
+                  A processar...
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
+                  Entrar
+                </>
+              )}
             </Button>
           </div>
         </form>
@@ -1603,9 +1755,9 @@ const Index = () => {
                     </div>
                     <button 
                       onClick={handleLogout}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
                     >
-                      <FontAwesomeIcon icon={faSignOutAlt} className="mr-1" />
+                      <FontAwesomeIcon icon={faRightFromBracket} className="mr-1" />
                       Sair
                     </button>
                   </div>
@@ -1768,7 +1920,7 @@ const Index = () => {
                   </div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum serviço encontrado</h3>
                   <p className="text-muted-foreground mb-4">
-                    Tente ajustar os seus filtros ou o termo de busca.
+                    Nenhum serviço encontrado. Tente ajustar os seus filtros.
                   </p>
                   <button
                     onClick={() => {
@@ -1860,7 +2012,7 @@ const Index = () => {
                       className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted/50"
                       title="Sair"
                     >
-                      <FontAwesomeIcon icon={faSignOutAlt} className="w-4 h-4" />
+                      <FontAwesomeIcon icon={faRightFromBracket} className="w-4 h-4" />
                     </button>
                   </div>
                 )}
@@ -1929,7 +2081,7 @@ const Index = () => {
                   </div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum serviço encontrado</h3>
                   <p className="text-muted-foreground mb-4">
-                    Tente ajustar os seus filtros ou o termo de busca.
+                    Nenhum serviço encontrado. Tente ajustar os seus filtros.
                   </p>
                   <button
                     onClick={() => {
