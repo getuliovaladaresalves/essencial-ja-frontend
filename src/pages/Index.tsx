@@ -1861,7 +1861,7 @@ const Index = () => {
             </div>
 
             {/* Segunda Linha: Categorias */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
               {quickCategories.map((category) => (
                 <button
                   key={category.id}
