@@ -28,6 +28,7 @@ const ModalManager: React.FC = () => {
         />
       );
 
+    case 'login':
     case 'loginProvider':
       return (
         <LoginModal
