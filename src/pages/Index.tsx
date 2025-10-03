@@ -30,7 +30,6 @@ import {
   faSignInAlt,
   faExclamationTriangle,
   faFire,
-  faWrench,
   faUserPlus,
   faShoppingCart,
   faHeart,
@@ -337,8 +336,11 @@ const Index = () => {
   const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'distance'>('relevance');
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
   
-  // Estado do modal de cadastro
-  const [isCadastroOpen, setIsCadastroOpen] = useState(false);
+  // Estado centralizado dos modais
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [categoriaEmergencia, setCategoriaEmergencia] = useState<string | null>(null);
+
+  // Dados dos formulários
   const [cadastroData, setCadastroData] = useState({
     nome: '',
     email: '',
@@ -354,13 +356,6 @@ const Index = () => {
     confirmarSenha: '',
     atendimento24h: false,
   });
-
-  // Estado do modal de login
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-
-  // Estado do modal de emergência
-  const [isEmergenciaOpen, setIsEmergenciaOpen] = useState(false);
-  const [categoriaEmergencia, setCategoriaEmergencia] = useState<string | null>(null);
 
   // Estados de usuário
   const [userType, setUserType] = useState<'guest' | 'customer' | 'provider'>('guest');
@@ -378,9 +373,7 @@ const Index = () => {
   // Estado do menu de perfil
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
-  // Estados para modais de usuário final
-  const [isCustomerCadastroOpen, setIsCustomerCadastroOpen] = useState(false);
-  const [isCustomerLoginOpen, setIsCustomerLoginOpen] = useState(false);
+  // Dados do formulário de cliente
   const [customerData, setCustomerData] = useState({
     nome: '',
     email: '',
@@ -475,7 +468,7 @@ const Index = () => {
   };
 
   const handleSOSClick = () => {
-    setIsEmergenciaOpen(true);
+    setActiveModal('emergency');
   };
 
   // Lógica para prestadores de emergência
@@ -548,20 +541,20 @@ const Index = () => {
         setUserData(data.user);
         
         alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essencial Já!');
-        setIsCadastroOpen(false);
+        setActiveModal(null);
         
-        // Limpar formulário
-        setCadastroData({
-          nome: '',
-          email: '',
-          telefone: '',
-          categoria: '',
-          endereco: '',
-          descricao: '',
-          horarioFuncionamento: '',
-          precoBase: '',
-          experiencia: '',
-          certificacoes: '',
+    // Limpar formulário
+    setCadastroData({
+      nome: '',
+      email: '',
+      telefone: '',
+      categoria: '',
+      endereco: '',
+      descricao: '',
+      horarioFuncionamento: '',
+      precoBase: '',
+      experiencia: '',
+      certificacoes: '',
           senha: '',
           confirmarSenha: '',
           atendimento24h: false,
@@ -587,7 +580,7 @@ const Index = () => {
     setIsLoggedIn(true);
     setUserType('provider');
     setUserData(userData);
-    setIsLoginOpen(false);
+    setActiveModal(null);
   };
 
   // Funções para usuários finais
@@ -615,8 +608,8 @@ const Index = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          nome: customerData.nome,
-          email: customerData.email,
+      nome: customerData.nome,
+      email: customerData.email,
           senha: customerData.senha,
         }),
       });
@@ -629,12 +622,12 @@ const Index = () => {
         localStorage.setItem('userData', JSON.stringify(data.user));
         
         // Atualizar estado
-        setIsLoggedIn(true);
-        setUserType('customer');
+    setIsLoggedIn(true);
+    setUserType('customer');
         setUserData(data.user);
         
         alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essencial Já!');
-        setIsCustomerCadastroOpen(false);
+        setActiveModal(null);
         setCustomerData({ nome: '', email: '', telefone: '', endereco: '', senha: '', confirmarSenha: '' });
       } else {
         const errorData = await response.json();
@@ -660,7 +653,7 @@ const Index = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: customerData.email,
+      email: customerData.email,
           senha: customerData.senha,
         }),
       });
@@ -678,7 +671,7 @@ const Index = () => {
         setUserData(data.user);
         
         alert('✅ Login realizado com sucesso!\n\nBem-vindo de volta!');
-        setIsCustomerLoginOpen(false);
+        setActiveModal(null);
       } else {
         const errorData = await response.json();
         alert(`❌ Erro no login: ${errorData.message}`);
@@ -798,8 +791,8 @@ const Index = () => {
   );
 
   // Modal de Cadastro de Prestador
-  const CadastroModal = () => (
-    <Dialog open={isCadastroOpen} onOpenChange={setIsCadastroOpen}>
+  const CadastroModal = ({ onClose, onOpenLogin }: { onClose: () => void; onOpenLogin: () => void }) => (
+    <Dialog open={activeModal === 'registerProvider'} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
@@ -974,33 +967,33 @@ const Index = () => {
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
                   Senha *
-                </label>
-                <Input
+              </label>
+              <Input
                   type="password"
                   value={cadastroData.senha}
                   onChange={(e) => handleCadastroChange('senha', e.target.value)}
                   placeholder="Sua senha"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
                   Confirmar Senha *
-                </label>
-                <Input
-                  type="password"
+              </label>
+              <Input
+                type="password"
                   value={cadastroData.confirmarSenha}
                   onChange={(e) => handleCadastroChange('confirmarSenha', e.target.value)}
                   placeholder="Confirme sua senha"
-                  required
-                />
-              </div>
+                required
+              />
             </div>
-            
+          </div>
+
             <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -1020,7 +1013,7 @@ const Index = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setIsCadastroOpen(false)}
+              onClick={() => setActiveModal(null)}
               className="flex-1"
             >
               Cancelar
@@ -1050,8 +1043,8 @@ const Index = () => {
 
 
   // Modal de Emergência
-  const EmergenciaModal = () => (
-    <Dialog open={isEmergenciaOpen} onOpenChange={setIsEmergenciaOpen}>
+  const EmergenciaModal = ({ onClose }: { onClose: () => void }) => (
+    <Dialog open={activeModal === 'emergency'} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl text-destructive">
@@ -1116,7 +1109,7 @@ const Index = () => {
                       className="p-4 border border-destructive/20 rounded-lg bg-destructive/5 hover:bg-destructive/10 transition-colors cursor-pointer"
                       onClick={() => {
                         setSelectedProvider(provider);
-                        setIsEmergenciaOpen(false);
+                        setActiveModal(null);
                       }}
                     >
                       <div className="flex items-center justify-between">
@@ -1182,7 +1175,7 @@ const Index = () => {
           <div className="flex justify-end pt-4">
             <Button
               onClick={() => {
-                setIsEmergenciaOpen(false);
+                setActiveModal(null);
                 setCategoriaEmergencia(null);
               }}
               variant="outline"
@@ -1196,8 +1189,8 @@ const Index = () => {
   );
 
   // Modal de Cadastro de Cliente
-  const CustomerCadastroModal = () => (
-    <Dialog open={isCustomerCadastroOpen} onOpenChange={setIsCustomerCadastroOpen}>
+  const CustomerCadastroModal = ({ onClose, onOpenLogin }: { onClose: () => void; onOpenLogin: () => void }) => (
+    <Dialog open={activeModal === 'registerClient'} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
@@ -1293,10 +1286,7 @@ const Index = () => {
               Já tem uma conta?{' '}
               <button
                 type="button"
-                onClick={() => {
-                  setIsCustomerCadastroOpen(false);
-                  setIsCustomerLoginOpen(true);
-                }}
+                onClick={onOpenLogin}
                 className="text-primary hover:text-primary-hover transition-colors font-medium"
               >
                 Entrar aqui
@@ -1308,7 +1298,7 @@ const Index = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setIsCustomerCadastroOpen(false)}
+              onClick={onClose}
               className="flex-1"
               disabled={isLoading}
             >
@@ -1326,8 +1316,8 @@ const Index = () => {
                 </>
               ) : (
                 <>
-                  <FontAwesomeIcon icon={faUserPlus} className="mr-2" />
-                  Criar Conta
+              <FontAwesomeIcon icon={faUserPlus} className="mr-2" />
+              Criar Conta
                 </>
               )}
             </Button>
@@ -1338,8 +1328,8 @@ const Index = () => {
   );
 
   // Modal de Login de Cliente
-  const CustomerLoginModal = () => (
-    <Dialog open={isCustomerLoginOpen} onOpenChange={setIsCustomerLoginOpen}>
+  const CustomerLoginModal = ({ onClose, onOpenCadastro }: { onClose: () => void; onOpenCadastro: () => void }) => (
+    <Dialog open={activeModal === 'loginClient'} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
@@ -1389,10 +1379,7 @@ const Index = () => {
               Não tem uma conta?{' '}
               <button
                 type="button"
-                onClick={() => {
-                  setIsCustomerLoginOpen(false);
-                  setIsCustomerCadastroOpen(true);
-                }}
+                onClick={onOpenCadastro}
                 className="text-primary hover:text-primary-hover transition-colors font-medium"
               >
                 Cadastre-se aqui
@@ -1404,7 +1391,7 @@ const Index = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setIsCustomerLoginOpen(false)}
+              onClick={onClose}
               className="flex-1"
               disabled={isLoading}
             >
@@ -1422,8 +1409,8 @@ const Index = () => {
                 </>
               ) : (
                 <>
-                  <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
-                  Entrar
+              <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
+              Entrar
                 </>
               )}
             </Button>
@@ -1564,7 +1551,7 @@ const Index = () => {
             onClick={() => {
               setPrestadorContratado(selectedProvider);
               setFluxoEtapa('confirmacao');
-              setIsProviderModalOpen(false);
+              setSelectedProvider(null);
             }}
             className="w-full bg-primary hover:bg-primary-hover text-primary-foreground py-4 rounded-lg font-bold text-lg transition-colors"
           >
@@ -1738,20 +1725,20 @@ const Index = () => {
               {/* Lado Esquerdo: Logótipo */}
               <div className="flex items-center">
                 <Logo size="lg" variant="horizontal" className="text-primary" />
-              </div>
+                </div>
 
               {/* Centro: Seletor de Localização */}
               <div className="flex items-center">
                 <LocationSelector />
               </div>
-
+              
               {/* Lado Direito: Ações do Utilizador */}
               <div className="flex items-center gap-4">
                 {!isLoggedIn ? (
                   <>
                     {/* Link "Seja um Parceiro" - apenas desktop */}
                     <button 
-                      onClick={() => setIsLoginOpen(true)}
+                      onClick={() => setActiveModal('registerProvider')}
                       className="hidden md:block text-sm text-primary hover:text-primary-hover transition-colors font-medium"
                     >
                       Seja um Parceiro
@@ -1759,13 +1746,13 @@ const Index = () => {
                     
                     {/* Botões de Login/Cadastro */}
                     <button 
-                      onClick={() => setIsCustomerLoginOpen(true)}
+                      onClick={() => setActiveModal('loginClient')}
                       className="text-sm text-gray-700 hover:text-primary transition-colors font-medium"
                     >
                       Entrar
                     </button>
                     <button 
-                      onClick={() => setIsCustomerCadastroOpen(true)}
+                      onClick={() => setActiveModal('registerClient')}
                       className="px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-primary-hover transition-colors font-medium"
                     >
                       Criar Conta
@@ -1790,20 +1777,20 @@ const Index = () => {
             {/* Barra de Busca */}
             <div className="p-6 border-b border-border">
               <div className="relative">
-                <FontAwesomeIcon
-                  icon={faMagnifyingGlass}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-                />
-                <input
-                  type="text"
-                  placeholder="Buscar por serviço ou nome..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  <FontAwesomeIcon
+                    icon={faMagnifyingGlass}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Buscar por serviço ou nome..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary outline-none"
-                />
+                  />
+                </div>
               </div>
-            </div>
-
+              
             {/* Info e Controles */}
             <div className="p-6 border-b border-border">
               <h2 className="text-2xl font-bold text-foreground">Serviços em Belo Horizonte</h2>
@@ -1961,13 +1948,13 @@ const Index = () => {
               {/* Ícone de Perfil */}
               <div className="flex items-center">
                 {!isLoggedIn ? (
-                  <button 
-                    onClick={() => setIsCustomerLoginOpen(true)}
+                    <button 
+                      onClick={() => setActiveModal('loginClient')}
                     className="p-2 text-gray-600 hover:text-primary transition-colors rounded-full hover:bg-gray-100"
-                    title="Entrar"
-                  >
+                      title="Entrar"
+                    >
                     <FontAwesomeIcon icon={faUserCircle} className="w-6 h-6" />
-                  </button>
+                    </button>
                 ) : (
                   <ProfileMenu
                     isLoggedIn={isLoggedIn}
@@ -1981,19 +1968,19 @@ const Index = () => {
 
           {/* Seção Inferior - Barra de Busca */}
           <div className="px-4 py-3">
-            <div className="relative">
-              <FontAwesomeIcon
-                icon={faMagnifyingGlass}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-              />
-              <input
-                type="text"
-                placeholder="O que você precisa agora?"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+          <div className="relative">
+            <FontAwesomeIcon
+              icon={faMagnifyingGlass}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
+            <input
+              type="text"
+              placeholder="O que você precisa agora?"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 border-2 border-border rounded-xl bg-card text-card-foreground focus:outline-none focus:border-primary transition-all"
-              />
-            </div>
+            />
+          </div>
           </div>
         </header>
 
@@ -2076,25 +2063,42 @@ const Index = () => {
       {/* Modal de Detalhes */}
       {selectedProvider && <ProviderModal provider={selectedProvider} />}
       
-      {/* Modal de Cadastro */}
-      <CadastroModal />
+      {/* Modais Centralizados */}
+      {activeModal === 'registerProvider' && (
+        <CadastroModal 
+          onClose={() => setActiveModal(null)}
+          onOpenLogin={() => setActiveModal('loginProvider')}
+        />
+      )}
       
-      {/* Modal de Login */}
-      <LoginModal
-        isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
-        onOpenCadastro={() => setIsCadastroOpen(true)}
-      />
+      {activeModal === 'loginProvider' && (
+        <LoginModal
+          isOpen={true}
+          onClose={() => setActiveModal(null)}
+          onLoginSuccess={handleLoginSuccess}
+          onOpenCadastro={() => setActiveModal('registerProvider')}
+        />
+      )}
       
-      {/* Modal de Emergência */}
-      <EmergenciaModal />
+      {activeModal === 'emergency' && (
+        <EmergenciaModal 
+          onClose={() => setActiveModal(null)}
+        />
+      )}
       
-      {/* Modal de Cadastro de Cliente */}
-      <CustomerCadastroModal />
+      {activeModal === 'registerClient' && (
+        <CustomerCadastroModal 
+          onClose={() => setActiveModal(null)}
+          onOpenLogin={() => setActiveModal('loginClient')}
+        />
+      )}
       
-      {/* Modal de Login de Cliente */}
-      <CustomerLoginModal />
+      {activeModal === 'loginClient' && (
+        <CustomerLoginModal 
+          onClose={() => setActiveModal(null)}
+          onOpenCadastro={() => setActiveModal('registerClient')}
+        />
+      )}
       
       {/* Componentes do Fluxo de Contratação */}
       <ModalConfirmacao />
