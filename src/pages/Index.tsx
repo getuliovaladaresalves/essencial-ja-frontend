@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Logo from '@/components/Logo';
 import LoginModal from '@/components/LoginModal';
+import LocationSelector from '@/components/LocationSelector';
+import ProfileMenu from '@/components/ProfileMenu';
 import {
   faMagnifyingGlass,
   faCar,
@@ -371,6 +373,9 @@ const Index = () => {
 
   // Estados de carregamento
   const [isLoading, setIsLoading] = useState(false);
+
+  // Estado do menu de perfil
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   // Estados para modais de usuário final
   const [isCustomerCadastroOpen, setIsCustomerCadastroOpen] = useState(false);
@@ -1725,125 +1730,79 @@ const Index = () => {
     <div className="min-h-screen bg-background font-poppins">
       {/* Layout Desktop */}
       <div className="hidden md:flex h-screen flex-col">
-        {/* Header Desktop */}
-        <header className="bg-card shadow-lg z-20 border-b border-border">
-          {/* Área de Registro Moderna */}
-          <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-primary/10">
-            <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 text-sm text-primary">
-                  <FontAwesomeIcon icon={faShield} className="text-primary" />
-                  <span>Plataforma confiável de serviços essenciais</span>
-                </div>
+        {/* Header Desktop Refatorado */}
+        <header className="bg-white shadow-md z-20 border-b border-gray-200">
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              {/* Lado Esquerdo: Logótipo */}
+              <div className="flex items-center">
+                <Logo size="lg" variant="horizontal" className="text-primary" />
               </div>
-              
-              {/* Navegação de Usuário */}
+
+              {/* Centro: Seletor de Localização */}
+              <div className="flex items-center">
+                <LocationSelector />
+              </div>
+
+              {/* Lado Direito: Ações do Utilizador */}
               <div className="flex items-center gap-4">
                 {!isLoggedIn ? (
                   <>
+                    {/* Link "Seja um Parceiro" - apenas desktop */}
+                    <button 
+                      onClick={() => setIsLoginOpen(true)}
+                      className="hidden md:block text-sm text-primary hover:text-primary-hover transition-colors font-medium"
+                    >
+                      Seja um Parceiro
+                    </button>
+                    
+                    {/* Botões de Login/Cadastro */}
                     <button 
                       onClick={() => setIsCustomerLoginOpen(true)}
-                      className="text-sm text-foreground hover:text-primary transition-colors font-medium"
+                      className="text-sm text-gray-700 hover:text-primary transition-colors font-medium"
                     >
                       Entrar
                     </button>
                     <button 
                       onClick={() => setIsCustomerCadastroOpen(true)}
-                      className="px-4 py-1.5 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary-hover transition-colors font-medium"
+                      className="px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-primary-hover transition-colors font-medium"
                     >
                       Criar Conta
                     </button>
-                    <div className="h-4 w-px bg-border"></div>
-                    <button 
-                      onClick={() => setIsLoginOpen(true)}
-                      className="text-sm text-primary hover:text-primary-hover transition-colors font-medium"
-                    >
-                      Sou Prestador
-                    </button>
                   </>
                 ) : (
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                        <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-sm" />
-                      </div>
-                      <span className="text-sm font-medium text-foreground">{userData.nome}</span>
-                    </div>
-                    <button 
-                      onClick={handleLogout}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-                    >
-                      <FontAwesomeIcon icon={faRightFromBracket} className="mr-1" />
-                      Sair
-                    </button>
-                  </div>
+                  <ProfileMenu
+                    isLoggedIn={isLoggedIn}
+                    userData={userData}
+                    onLogout={handleLogout}
+                  />
                 )}
               </div>
             </div>
           </div>
-
-          {/* Barra Principal */}
-          <div className="container mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-8">
-                <Logo size="lg" variant="horizontal" className="text-primary" />
-                
-                {/* Barra de busca Desktop */}
-                <div className="relative w-[400px]">
-                  <FontAwesomeIcon
-                    icon={faMagnifyingGlass}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Buscar por serviço ou nome..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-2 rounded-full border border-border bg-background text-foreground focus:ring-2 focus:ring-primary outline-none"
-                  />
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-                    <FontAwesomeIcon icon={faLocationDot} className="text-lg" />
-                    <span className="text-sm">Belo Horizonte</span>
-                  </div>
-                  <button 
-                    onClick={handleSOSClick}
-                    className="flex items-center gap-2 px-4 py-2 bg-destructive/10 text-destructive rounded-full hover:bg-destructive/20 transition-colors font-medium"
-                  >
-                    <FontAwesomeIcon icon={faPhone} className="text-sm" />
-                    <span className="text-sm">Emergência</span>
-                  </button>
-                </div>
-              </div>
-              
-              {/* Menu de Usuário Logado */}
-              {isLoggedIn && (
-                <div className="flex items-center gap-4">
-                  <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" title="Favoritos">
-                    <FontAwesomeIcon icon={faHeart} className="text-lg" />
-                  </button>
-                  <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" title="Carrinho">
-                    <FontAwesomeIcon icon={faShoppingCart} className="text-lg" />
-                  </button>
-                  <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" title="Notificações">
-                    <FontAwesomeIcon icon={faBell} className="text-lg" />
-                  </button>
-                  <button className="p-2 text-muted-foreground hover:text-foreground transition-colors" title="Configurações">
-                    <FontAwesomeIcon icon={faCog} className="text-lg" />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
         </header>
 
         {/* Conteúdo Principal Desktop */}
         <div className="flex-1 flex overflow-hidden">
           {/* Coluna Esquerda - Lista */}
           <div className="w-[450px] flex flex-col border-r border-border bg-card">
+            {/* Barra de Busca */}
+            <div className="p-6 border-b border-border">
+              <div className="relative">
+                <FontAwesomeIcon
+                  icon={faMagnifyingGlass}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+                />
+                <input
+                  type="text"
+                  placeholder="Buscar por serviço ou nome..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary outline-none"
+                />
+              </div>
+            </div>
+
             {/* Info e Controles */}
             <div className="p-6 border-b border-border">
               <h2 className="text-2xl font-bold text-foreground">Serviços em Belo Horizonte</h2>
@@ -1984,28 +1943,29 @@ const Index = () => {
 
       {/* Layout Mobile */}
       <div className="md:hidden min-h-screen pb-24">
-        {/* Header Mobile Simplificado e Estável */}
-        <header className="sticky top-0 z-20 bg-background shadow-lg border-b border-border">
-          {/* Header Principal - Sempre visível */}
+        {/* Header Mobile Refatorado */}
+        <header className="sticky top-0 z-20 bg-white shadow-md border-b border-gray-200">
           <div className="px-4 py-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              {/* Lado Esquerdo: Logótipo */}
+              <div className="flex items-center">
                 <Logo size="md" variant="horizontal" className="text-primary" />
               </div>
               
+              {/* Lado Direito: Ações do Utilizador */}
               <div className="flex items-center gap-2">
                 {!isLoggedIn ? (
                   <>
                     <button 
                       onClick={() => setIsCustomerLoginOpen(true)}
-                      className="p-2 text-muted-foreground hover:text-primary transition-colors rounded-full hover:bg-muted/50"
+                      className="p-2 text-gray-600 hover:text-primary transition-colors rounded-full hover:bg-gray-100"
                       title="Entrar"
                     >
                       <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
                     </button>
                     <button 
                       onClick={() => setIsCustomerCadastroOpen(true)}
-                      className="p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary-hover transition-colors shadow-md"
+                      className="p-2 bg-primary text-white rounded-full hover:bg-primary-hover transition-colors shadow-md"
                       title="Criar Conta"
                     >
                       <FontAwesomeIcon icon={faUserPlus} className="w-4 h-4" />
@@ -2019,18 +1979,11 @@ const Index = () => {
                     </button>
                   </>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center overflow-hidden ring-2 ring-primary/20">
-                      <FontAwesomeIcon icon={faUser} className="text-primary-foreground text-sm w-4 h-4" />
-                    </div>
-                    <button 
-                      onClick={handleLogout}
-                      className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted/50"
-                      title="Sair"
-                    >
-                      <FontAwesomeIcon icon={faRightFromBracket} className="w-4 h-4" />
-                    </button>
-                  </div>
+                  <ProfileMenu
+                    isLoggedIn={isLoggedIn}
+                    userData={userData}
+                    onLogout={handleLogout}
+                  />
                 )}
               </div>
             </div>
@@ -2038,6 +1991,11 @@ const Index = () => {
         </header>
 
         <main className="p-4 space-y-6">
+          {/* Seletor de Localização Mobile */}
+          <div className="flex justify-center">
+            <LocationSelector />
+          </div>
+
           {/* Barra de busca Mobile */}
           <div className="relative">
             <FontAwesomeIcon
