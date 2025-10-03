@@ -25,6 +25,7 @@ import { useCPF } from '@/lib/cpfValidator';
 import { usePhone } from '@/lib/phoneValidator';
 import { useEmail } from '@/lib/emailValidator';
 import { usePassword, usePasswordConfirm } from '@/lib/passwordValidator';
+import { useAddress } from '@/lib/addressValidator';
 
 interface RegisterProviderModalProps {
   onClose: () => void;
@@ -37,7 +38,6 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
   // Estados do formulário
   const [formData, setFormData] = useState({
     nome: '',
-    endereco: '',
     descricao: '',
     horarioFuncionamento: '',
     precoBase: '',
@@ -52,6 +52,7 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
   const emailHook = useEmail();
   const passwordHook = usePassword();
   const passwordConfirmHook = usePasswordConfirm(passwordHook.value);
+  const addressHook = useAddress();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -67,7 +68,6 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
     const newErrors: Record<string, string> = {};
 
     if (!formData.nome.trim()) newErrors.nome = 'Nome é obrigatório';
-    if (!formData.endereco.trim()) newErrors.endereco = 'Endereço é obrigatório';
     if (!formData.descricao.trim()) newErrors.descricao = 'Descrição é obrigatória';
     
     // Validar CPF
@@ -95,6 +95,11 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
       newErrors.confirmarSenha = passwordConfirmHook.error;
     }
 
+    // Validar endereço
+    if (!addressHook.validate()) {
+      newErrors.endereco = addressHook.errors[0] || 'Endereço inválido';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -119,7 +124,7 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
           email: emailHook.value, // E-mail já validado e formatado
           senha: passwordHook.value,
           telefone: phoneHook.value.replace(/\D/g, ''), // Enviar telefone sem formatação
-          endereco: formData.endereco,
+          endereco: addressHook.value,
           descricao: formData.descricao,
           horarioFuncionamento: formData.horarioFuncionamento,
           precoBase: formData.precoBase,
@@ -364,13 +369,47 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
               </label>
               <Input
                 type="text"
-                value={formData.endereco}
-                onChange={(e) => handleInputChange('endereco', e.target.value)}
-                placeholder="Rua, número, bairro, cidade"
+                value={addressHook.value}
+                onChange={(e) => addressHook.handleChange(e.target.value)}
+                placeholder="Rua, número, bairro, cidade, estado"
                 className={errors.endereco ? 'border-destructive' : ''}
                 disabled={isLoading}
               />
               {errors.endereco && <p className="text-sm text-destructive mt-1">{errors.endereco}</p>}
+              
+              {/* Lista de erros de validação */}
+              {addressHook.errors.length > 0 && (
+                <div className="mt-2 text-xs text-muted-foreground">
+                  <p className="font-medium mb-1">Requisitos do endereço:</p>
+                  <ul className="space-y-1">
+                    {addressHook.errors.map((error, index) => (
+                      <li key={index} className="flex items-center gap-1">
+                        <span className="text-red-500">✗</span>
+                        {error}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {/* Sugestões de endereço */}
+              {addressHook.suggestions.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Sugestões:</p>
+                  <div className="space-y-1">
+                    {addressHook.suggestions.map((suggestion, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => addressHook.handleChange(suggestion)}
+                        className="block w-full text-left text-xs text-primary hover:text-primary-hover p-2 bg-muted/50 rounded hover:bg-muted transition-colors"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
