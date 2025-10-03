@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Logo from '@/components/Logo';
+import LoginModal from '@/components/LoginModal';
 import {
   faMagnifyingGlass,
   faCar,
@@ -346,14 +347,13 @@ const Index = () => {
     precoBase: '',
     experiencia: '',
     certificacoes: '',
+    senha: '',
+    confirmarSenha: '',
+    atendimento24h: false,
   });
 
   // Estado do modal de login
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [loginData, setLoginData] = useState({
-    email: '',
-    senha: '',
-  });
 
   // Estado do modal de emergência
   const [isEmergenciaOpen, setIsEmergenciaOpen] = useState(false);
@@ -380,6 +380,8 @@ const Index = () => {
     email: '',
     telefone: '',
     endereco: '',
+    senha: '',
+    confirmarSenha: '',
   });
 
   // Estados para fluxo de contratação
@@ -488,44 +490,43 @@ const Index = () => {
   ];
 
   // Funções para o formulário de cadastro
-  const handleCadastroSubmit = (e: React.FormEvent) => {
+  const handleCadastroSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui você pode adicionar a lógica para enviar os dados
-    console.log('Dados do cadastro:', cadastroData);
-    alert('✅ Cadastro realizado com sucesso!\n\nEm breve nossa equipe entrará em contato para finalizar o processo.');
-    setIsCadastroOpen(false);
-    // Limpar formulário
-    setCadastroData({
-      nome: '',
-      email: '',
-      telefone: '',
-      categoria: '',
-      endereco: '',
-      descricao: '',
-      horarioFuncionamento: '',
-      precoBase: '',
-      experiencia: '',
-      certificacoes: '',
-    });
-  };
-
-  const handleCadastroChange = (field: string, value: string) => {
-    setCadastroData(prev => ({ ...prev, [field]: value }));
-  };
-
-  // Funções para o formulário de login
-  const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    
+    // Validação de senha
+    if (cadastroData.senha !== cadastroData.confirmarSenha) {
+      alert('❌ As senhas não coincidem. Tente novamente.');
+      return;
+    }
+    
+    if (cadastroData.senha.length < 6) {
+      alert('❌ A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
-      // Simular chamada à API
-      const response = await fetch('https://essencial-ja-backend.vercel.app/api/auth/login', {
+      // Chamada à API
+      const response = await fetch('https://essencial-ja-backend.vercel.app/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(loginData),
+        body: JSON.stringify({
+          nome: cadastroData.nome,
+          email: cadastroData.email,
+          senha: cadastroData.senha,
+          telefone: cadastroData.telefone,
+          categoria: cadastroData.categoria,
+          endereco: cadastroData.endereco,
+          descricao: cadastroData.descricao,
+          horarioFuncionamento: cadastroData.horarioFuncionamento,
+          precoBase: cadastroData.precoBase,
+          experiencia: cadastroData.experiencia,
+          certificacoes: cadastroData.certificacoes,
+          atendimento24h: cadastroData.atendimento24h,
+        }),
       });
 
       if (response.ok) {
@@ -540,33 +541,64 @@ const Index = () => {
         setUserType('provider');
         setUserData(data.user);
         
-        alert('✅ Login realizado com sucesso!\n\nBem-vindo de volta!');
-        setIsLoginOpen(false);
+        alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essenciais Já!');
+        setIsCadastroOpen(false);
         
         // Limpar formulário
-        setLoginData({
+        setCadastroData({
+          nome: '',
           email: '',
+          telefone: '',
+          categoria: '',
+          endereco: '',
+          descricao: '',
+          horarioFuncionamento: '',
+          precoBase: '',
+          experiencia: '',
+          certificacoes: '',
           senha: '',
+          confirmarSenha: '',
+          atendimento24h: false,
         });
       } else {
         const errorData = await response.json();
-        alert(`❌ Erro no login: ${errorData.message}`);
+        alert(`❌ Erro no cadastro: ${errorData.message}`);
       }
     } catch (error) {
-      console.error('Erro no login:', error);
+      console.error('Erro no cadastro:', error);
       alert('❌ Erro de conexão. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleLoginChange = (field: string, value: string) => {
-    setLoginData(prev => ({ ...prev, [field]: value }));
+  const handleCadastroChange = (field: string, value: string | boolean) => {
+    setCadastroData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Função para lidar com sucesso do login
+  const handleLoginSuccess = (userData: any) => {
+    setIsLoggedIn(true);
+    setUserType('provider');
+    setUserData(userData);
+    setIsLoginOpen(false);
   };
 
   // Funções para usuários finais
   const handleCustomerCadastroSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validação de senha
+    if (customerData.senha !== customerData.confirmarSenha) {
+      alert('❌ As senhas não coincidem. Tente novamente.');
+      return;
+    }
+    
+    if (customerData.senha.length < 6) {
+      alert('❌ A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
@@ -579,7 +611,7 @@ const Index = () => {
         body: JSON.stringify({
           nome: customerData.nome,
           email: customerData.email,
-          senha: '123456', // Senha padrão para demonstração
+          senha: customerData.senha,
         }),
       });
 
@@ -597,7 +629,7 @@ const Index = () => {
         
         alert('✅ Cadastro realizado com sucesso!\n\nBem-vindo ao Essenciais Já!');
         setIsCustomerCadastroOpen(false);
-        setCustomerData({ nome: '', email: '', telefone: '', endereco: '' });
+        setCustomerData({ nome: '', email: '', telefone: '', endereco: '', senha: '', confirmarSenha: '' });
       } else {
         const errorData = await response.json();
         alert(`❌ Erro no cadastro: ${errorData.message}`);
@@ -623,7 +655,7 @@ const Index = () => {
         },
         body: JSON.stringify({
           email: customerData.email,
-          senha: customerData.telefone, // Usando telefone como senha para demonstração
+          senha: customerData.senha,
         }),
       });
 
@@ -928,6 +960,55 @@ const Index = () => {
             </div>
           </div>
 
+          {/* Informações de Acesso */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+              <FontAwesomeIcon icon={faLock} className="text-primary" />
+              Informações de Acesso
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Senha *
+                </label>
+                <Input
+                  type="password"
+                  value={cadastroData.senha}
+                  onChange={(e) => handleCadastroChange('senha', e.target.value)}
+                  placeholder="Sua senha"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Confirmar Senha *
+                </label>
+                <Input
+                  type="password"
+                  value={cadastroData.confirmarSenha}
+                  onChange={(e) => handleCadastroChange('confirmarSenha', e.target.value)}
+                  placeholder="Confirme sua senha"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="atendimento24h"
+                checked={cadastroData.atendimento24h}
+                onChange={(e) => handleCadastroChange('atendimento24h', e.target.checked)}
+                className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary focus:ring-2"
+              />
+              <label htmlFor="atendimento24h" className="text-sm font-medium text-foreground">
+                Ofereço atendimento 24 horas
+              </label>
+            </div>
+          </div>
+
           {/* Botões */}
           <div className="flex gap-4 pt-4">
             <Button
@@ -935,98 +1016,6 @@ const Index = () => {
               variant="outline"
               onClick={() => setIsCadastroOpen(false)}
               className="flex-1"
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              className="flex-1 bg-primary hover:bg-primary-hover"
-            >
-              <FontAwesomeIcon icon={faCheck} className="mr-2" />
-              Cadastrar-se
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-
-  // Modal de Login
-  const LoginModal = () => (
-    <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl">
-            <FontAwesomeIcon icon={faSignInAlt} className="text-primary" />
-            Entrar na Conta
-          </DialogTitle>
-          <DialogDescription>
-            Digite suas credenciais para acessar sua conta de prestador.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <form onSubmit={handleLoginSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                E-mail *
-              </label>
-              <Input
-                type="email"
-                value={loginData.email}
-                onChange={(e) => handleLoginChange('email', e.target.value)}
-                placeholder="seu@email.com"
-                required
-                className="w-full"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Senha *
-              </label>
-              <Input
-                type="password"
-                value={loginData.senha}
-                onChange={(e) => handleLoginChange('senha', e.target.value)}
-                placeholder="Sua senha"
-                required
-                className="w-full"
-              />
-            </div>
-          </div>
-
-          {/* Links adicionais */}
-          <div className="text-center space-y-2">
-            <button
-              type="button"
-              className="text-sm text-primary hover:text-primary-hover transition-colors"
-            >
-              Esqueci minha senha
-            </button>
-            <div className="text-sm text-muted-foreground">
-              Não tem uma conta?{' '}
-              <button
-                type="button"
-                onClick={() => {
-                  setIsLoginOpen(false);
-                  setIsCadastroOpen(true);
-                }}
-                className="text-primary hover:text-primary-hover transition-colors font-medium"
-              >
-                Cadastre-se aqui
-              </button>
-            </div>
-          </div>
-
-          {/* Botões */}
-          <div className="flex gap-4 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsLoginOpen(false)}
-              className="flex-1"
-              disabled={isLoading}
             >
               Cancelar
             </Button>
@@ -1042,8 +1031,8 @@ const Index = () => {
                 </>
               ) : (
                 <>
-                  <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
-                  Entrar
+                  <FontAwesomeIcon icon={faCheck} className="mr-2" />
+                  Cadastrar-se
                 </>
               )}
             </Button>
@@ -1052,6 +1041,7 @@ const Index = () => {
       </DialogContent>
     </Dialog>
   );
+
 
   // Modal de Emergência
   const EmergenciaModal = () => (
@@ -1265,6 +1255,32 @@ const Index = () => {
               required
             />
           </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Senha *
+            </label>
+            <Input
+              type="password"
+              value={customerData.senha}
+              onChange={(e) => handleCustomerChange('senha', e.target.value)}
+              placeholder="Sua senha"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Confirmar Senha *
+            </label>
+            <Input
+              type="password"
+              value={customerData.confirmarSenha}
+              onChange={(e) => handleCustomerChange('confirmarSenha', e.target.value)}
+              placeholder="Confirme sua senha"
+              required
+            />
+          </div>
 
           <div className="text-center space-y-2">
             <div className="text-sm text-muted-foreground">
@@ -1349,8 +1365,8 @@ const Index = () => {
             </label>
             <Input
               type="password"
-              value={customerData.telefone}
-              onChange={(e) => handleCustomerChange('telefone', e.target.value)}
+              value={customerData.senha}
+              onChange={(e) => handleCustomerChange('senha', e.target.value)}
               placeholder="Sua senha"
               required
             />
@@ -2118,7 +2134,12 @@ const Index = () => {
       <CadastroModal />
       
       {/* Modal de Login */}
-      <LoginModal />
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+        onOpenCadastro={() => setIsCadastroOpen(true)}
+      />
       
       {/* Modal de Emergência */}
       <EmergenciaModal />
