@@ -1793,78 +1793,59 @@ const Index = () => {
         {/* Seção de Consulta - Abaixo do Cabeçalho */}
         <div className="bg-white border-b border-gray-200 px-6 py-4">
           <div className="container mx-auto">
-            {/* Barra de Busca */}
-            <div className="mb-6">
-              <div className="relative max-w-2xl">
-                <FontAwesomeIcon
-                  icon={faMagnifyingGlass}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-                />
-                <input
-                  type="text"
-                  placeholder="Buscar por serviço ou nome..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary outline-none"
-                />
-              </div>
-            </div>
-
-            {/* Info e Controles */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">Serviços em Belo Horizonte</h2>
-                <p className="text-muted-foreground mt-1">
+            {/* Primeira Linha: Localização, Busca, Filtros e Ordenação */}
+            <div className="flex items-center gap-4 mb-4">
+              {/* Localização - Lado Esquerdo */}
+              <div className="flex-shrink-0">
+                <h2 className="text-lg font-semibold text-foreground">Serviços em Belo Horizonte</h2>
+                <p className="text-sm text-muted-foreground">
                   {filteredAndSortedProviders.length} opções encontradas
                 </p>
               </div>
 
-              {/* Controles de Filtro e Ordenação */}
-              <div className="flex flex-col sm:flex-row gap-4">
-                {/* Categorias Disponíveis */}
-                <div className="flex flex-wrap gap-2">
-                  {quickCategories.map((category) => (
-                    <button
-                      key={category.id}
-                      onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all ${
-                        selectedCategory === category.id
-                          ? 'bg-primary text-primary-foreground shadow-md'
-                          : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
-                      }`}
-                    >
-                      <FontAwesomeIcon icon={category.icon} className="text-sm" />
-                      <span>{category.name}</span>
-                    </button>
-                  ))}
+              {/* Barra de Busca - Central */}
+              <div className="flex-1 max-w-2xl mx-4">
+                <div className="relative">
+                  <FontAwesomeIcon
+                    icon={faMagnifyingGlass}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Buscar por serviço ou nome..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary outline-none"
+                  />
                 </div>
+              </div>
 
+              {/* Filtros e Ordenação - Lado Direito */}
+              <div className="flex items-center gap-3 flex-shrink-0">
                 {/* Filtros */}
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => handleFilterToggle('aberto24h')}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
-                      filters.aberto24h
-                        ? 'bg-primary text-primary-foreground shadow-md'
-                        : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
-                    }`}
-                  >
-                    <FontAwesomeIcon icon={faClock} className="text-sm" />
-                    <span>Aberto 24h</span>
-                  </button>
+                <button
+                  onClick={() => handleFilterToggle('aberto24h')}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                    filters.aberto24h
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faClock} className="text-sm" />
+                  <span>Aberto 24h</span>
+                </button>
 
-                  <button
-                    onClick={() => handleFilterToggle('seloEssencial')}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
-                      filters.seloEssencial
-                        ? 'bg-success text-success-foreground shadow-md'
-                        : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
-                    }`}
-                  >
-                    <FontAwesomeIcon icon={faShield} className="text-sm" />
-                    <span>Selo Essencial</span>
-                  </button>
-                </div>
+                <button
+                  onClick={() => handleFilterToggle('seloEssencial')}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                    filters.seloEssencial
+                      ? 'bg-success text-success-foreground shadow-md'
+                      : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faShield} className="text-sm" />
+                  <span>Selo Essencial</span>
+                </button>
 
                 {/* Ordenação */}
                 <select
@@ -1877,6 +1858,24 @@ const Index = () => {
                   <option value="distance">Distância</option>
                 </select>
               </div>
+            </div>
+
+            {/* Segunda Linha: Categorias */}
+            <div className="flex flex-wrap gap-2">
+              {quickCategories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                    selectedCategory === category.id
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={category.icon} className="text-sm" />
+                  <span>{category.name}</span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
