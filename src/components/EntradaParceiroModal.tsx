@@ -2,18 +2,16 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faSignInAlt, faUserPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@/components/ui/button';
+import { useModal } from '@/contexts/ModalContext';
 
 interface EntradaParceiroModalProps {
   onClose: () => void;
-  onLogin: () => void;
-  onRegister: () => void;
 }
 
 const EntradaParceiroModal: React.FC<EntradaParceiroModalProps> = ({ 
-  onClose, 
-  onLogin, 
-  onRegister 
+  onClose
 }) => {
+  const { showModal } = useModal();
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div className="bg-background rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
@@ -73,7 +71,7 @@ const EntradaParceiroModal: React.FC<EntradaParceiroModalProps> = ({
           <div className="space-y-3">
             {/* Botão Principal - Login */}
             <Button
-              onClick={onLogin}
+              onClick={() => showModal('loginProvider')}
               className="w-full bg-primary hover:bg-primary-hover text-primary-foreground py-3 rounded-lg font-semibold text-base transition-colors"
             >
               <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
@@ -82,7 +80,7 @@ const EntradaParceiroModal: React.FC<EntradaParceiroModalProps> = ({
 
             {/* Botão Secundário - Cadastro */}
             <Button
-              onClick={onRegister}
+              onClick={() => showModal('registerProvider')}
               variant="outline"
               className="w-full border-primary text-primary hover:bg-primary/5 py-3 rounded-lg font-semibold text-base transition-colors"
             >

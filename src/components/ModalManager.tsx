@@ -25,8 +25,6 @@ const ModalManager: React.FC = () => {
       return (
         <EntradaParceiroModal
           onClose={closeModal}
-          onLogin={() => navigateToModal('loginProvider')}
-          onRegister={() => navigateToModal('registerProvider')}
         />
       );
 
