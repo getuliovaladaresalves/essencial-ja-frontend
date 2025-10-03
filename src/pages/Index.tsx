@@ -1790,104 +1790,101 @@ const Index = () => {
           </div>
         </header>
 
-        {/* Conteúdo Principal Desktop */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Coluna Esquerda - Lista */}
-          <div className="w-[450px] flex flex-col border-r border-border bg-card">
+        {/* Seção de Consulta - Abaixo do Cabeçalho */}
+        <div className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="container mx-auto">
             {/* Barra de Busca */}
-            <div className="p-6 border-b border-border">
-              <div className="relative">
-                  <FontAwesomeIcon
-                    icon={faMagnifyingGlass}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Buscar por serviço ou nome..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+            <div className="mb-6">
+              <div className="relative max-w-2xl">
+                <FontAwesomeIcon
+                  icon={faMagnifyingGlass}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+                />
+                <input
+                  type="text"
+                  placeholder="Buscar por serviço ou nome..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary outline-none"
-                  />
-                </div>
+                />
               </div>
-              
+            </div>
+
             {/* Info e Controles */}
-            <div className="p-6 border-b border-border">
-              <h2 className="text-2xl font-bold text-foreground">Serviços em Belo Horizonte</h2>
-              <p className="text-muted-foreground mt-1">
-                {filteredAndSortedProviders.length} opções encontradas
-              </p>
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Serviços em Belo Horizonte</h2>
+                <p className="text-muted-foreground mt-1">
+                  {filteredAndSortedProviders.length} opções encontradas
+                </p>
+              </div>
 
               {/* Controles de Filtro e Ordenação */}
-              {/* Categorias Disponíveis */}
-              <div className="mt-6">
-                <h3 className="text-lg font-semibold text-foreground mb-3">Categorias</h3>
-                <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* Categorias Disponíveis */}
+                <div className="flex flex-wrap gap-2">
                   {quickCategories.map((category) => (
                     <button
                       key={category.id}
                       onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
-                      className={`flex items-center gap-2 p-3 rounded-lg text-sm font-medium transition-all ${
+                      className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all ${
                         selectedCategory === category.id
                           ? 'bg-primary text-primary-foreground shadow-md'
                           : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
                       }`}
                     >
-                      <FontAwesomeIcon icon={category.icon} className="text-base" />
+                      <FontAwesomeIcon icon={category.icon} className="text-sm" />
                       <span>{category.name}</span>
                     </button>
                   ))}
                 </div>
-              </div>
 
-              {/* Filtros e Ordenação */}
-              <div className="mt-6 space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-3">Filtros</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => handleFilterToggle('aberto24h')}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                        filters.aberto24h
-                          ? 'bg-primary text-primary-foreground shadow-md'
-                          : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
-                      }`}
-                    >
-                      <FontAwesomeIcon icon={faClock} className="text-sm" />
-                      <span>Aberto 24h</span>
-                    </button>
-
-                    <button
-                      onClick={() => handleFilterToggle('seloEssencial')}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                        filters.seloEssencial
-                          ? 'bg-success text-success-foreground shadow-md'
-                          : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
-                      }`}
-                    >
-                      <FontAwesomeIcon icon={faShield} className="text-sm" />
-                      <span>Selo Essencial</span>
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-3">Ordenar por</h3>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                    className="w-full border border-border rounded-lg py-3 px-4 bg-background text-foreground hover:bg-muted cursor-pointer text-sm transition-colors focus:ring-2 focus:ring-primary focus:border-primary"
+                {/* Filtros */}
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => handleFilterToggle('aberto24h')}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                      filters.aberto24h
+                        ? 'bg-primary text-primary-foreground shadow-md'
+                        : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                    }`}
                   >
-                    <option value="relevance">Relevância</option>
-                    <option value="rating">Avaliação</option>
-                    <option value="distance">Distância</option>
-                  </select>
+                    <FontAwesomeIcon icon={faClock} className="text-sm" />
+                    <span>Aberto 24h</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleFilterToggle('seloEssencial')}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                      filters.seloEssencial
+                        ? 'bg-success text-success-foreground shadow-md'
+                        : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                    }`}
+                  >
+                    <FontAwesomeIcon icon={faShield} className="text-sm" />
+                    <span>Selo Essencial</span>
+                  </button>
                 </div>
+
+                {/* Ordenação */}
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                  className="border border-border rounded-lg py-2 px-3 bg-background text-foreground hover:bg-muted cursor-pointer text-sm transition-colors focus:ring-2 focus:ring-primary focus:border-primary min-w-[140px]"
+                >
+                  <option value="relevance">Relevância</option>
+                  <option value="rating">Avaliação</option>
+                  <option value="distance">Distância</option>
+                </select>
               </div>
-
             </div>
+          </div>
+        </div>
 
-            {/* Lista de Prestadores */}
+        {/* Conteúdo Principal Desktop */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Coluna Esquerda - Lista de Prestadores */}
+          <div className="w-[400px] flex flex-col border-r border-border bg-card">
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {filteredAndSortedProviders.map((provider) => (
                 <ProviderCard
@@ -1920,7 +1917,7 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Coluna Direita - Mapa */}
+          {/* Coluna Direita - Mapa Reduzido */}
           <div className="flex-1 relative bg-muted">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d29998.69460136275!2d-43.95421226953124!3d-19.93282249999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa699dd3de625af%3A0x4301a88496677417!2sPra%C3%A7a%20da%20Liberdade!5e0!3m2!1spt-BR!2sbr!4v1696035650742!5m2!1spt-BR!2sbr"
