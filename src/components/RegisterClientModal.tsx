@@ -9,11 +9,13 @@ import {
   faEnvelope,
   faLock,
   faPhone,
-  faMapMarkerAlt
+  faMapMarkerAlt,
+  faIdCard
 } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useModal } from '@/contexts/ModalContext';
+import { useCPF } from '@/lib/cpfValidator';
 
 interface RegisterClientModalProps {
   onClose: () => void;
@@ -32,6 +34,9 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
     telefone: '',
     endereco: ''
   });
+
+  // Hook para validação de CPF
+  const cpfHook = useCPF();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -53,6 +58,11 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
     if (formData.senha !== formData.confirmarSenha) newErrors.confirmarSenha = 'Senhas não coincidem';
     if (!formData.telefone.trim()) newErrors.telefone = 'Telefone é obrigatório';
     if (!formData.endereco.trim()) newErrors.endereco = 'Endereço é obrigatório';
+    
+    // Validar CPF
+    if (!cpfHook.validate()) {
+      newErrors.cpf = cpfHook.error;
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -78,7 +88,8 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
           email: formData.email,
           senha: formData.senha,
           telefone: formData.telefone,
-          endereco: formData.endereco
+          endereco: formData.endereco,
+          cpf: cpfHook.value.replace(/\D/g, '') // Enviar CPF sem formatação
         }),
       });
 
@@ -155,6 +166,23 @@ const RegisterClientModal: React.FC<RegisterClientModalProps> = ({ onClose }) =>
               disabled={isLoading}
             />
             {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
+          </div>
+
+          {/* CPF */}
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              CPF *
+            </label>
+            <Input
+              type="text"
+              value={cpfHook.value}
+              onChange={(e) => cpfHook.handleChange(e.target.value)}
+              placeholder="000.000.000-00"
+              className={cpfHook.error ? 'border-destructive' : ''}
+              disabled={isLoading}
+              maxLength={14}
+            />
+            {cpfHook.error && <p className="text-sm text-destructive mt-1">{cpfHook.error}</p>}
           </div>
 
           {/* Senha */}
