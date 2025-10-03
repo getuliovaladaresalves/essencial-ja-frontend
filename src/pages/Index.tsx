@@ -1766,7 +1766,7 @@ const Index = () => {
                     
                     {/* Botões de Login/Cadastro */}
                     <button 
-                      onClick={() => showModal('loginClient')}
+                      onClick={() => showModal('login', { flow: 'client' })}
                       className="text-sm text-gray-700 hover:text-primary transition-colors font-medium"
                     >
                       Entrar
@@ -1969,7 +1969,7 @@ const Index = () => {
               <div className="flex items-center">
                 {!isLoggedIn ? (
                     <button 
-                      onClick={() => showModal('loginClient')}
+                      onClick={() => showModal('login', { flow: 'client' })}
                     className="p-2 text-gray-600 hover:text-primary transition-colors rounded-full hover:bg-gray-100"
                       title="Entrar"
                     >
