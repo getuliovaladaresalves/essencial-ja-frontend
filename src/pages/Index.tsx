@@ -40,6 +40,7 @@ import {
   faBars,
   faRightFromBracket,
   faSpinner,
+  faUserCircle,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Importação das imagens geradas
