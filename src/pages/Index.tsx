@@ -1994,8 +1994,36 @@ const Index = () => {
               placeholder="O que você precisa agora?"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border-2 border-border rounded-xl bg-card text-card-foreground focus:outline-none focus:border-primary transition-all"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  // A pesquisa já é feita automaticamente pelo onChange
+                  // Aqui podemos adicionar lógica adicional se necessário
+                }
+              }}
+              className="w-full pl-12 pr-20 py-3 border-2 border-border rounded-xl bg-card text-card-foreground focus:outline-none focus:border-primary transition-all"
             />
+            
+            {/* Botão de Limpar (X) */}
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-12 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+              >
+                <FontAwesomeIcon icon={faTimes} className="text-sm" />
+              </button>
+            )}
+            
+            {/* Botão de Pesquisar */}
+            <button
+              onClick={() => {
+                // A pesquisa já é feita automaticamente pelo onChange
+                // Aqui podemos adicionar lógica adicional se necessário
+                console.log('Pesquisando:', searchTerm);
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-primary hover:text-primary-hover transition-colors p-1"
+            >
+              <FontAwesomeIcon icon={faMagnifyingGlass} className="text-sm" />
+            </button>
           </div>
           </div>
         </header>
