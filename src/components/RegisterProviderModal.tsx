@@ -24,6 +24,7 @@ import { useModal } from '@/contexts/ModalContext';
 import { useCPF } from '@/lib/cpfValidator';
 import { usePhone } from '@/lib/phoneValidator';
 import { useEmail } from '@/lib/emailValidator';
+import { usePassword, usePasswordConfirm } from '@/lib/passwordValidator';
 
 interface RegisterProviderModalProps {
   onClose: () => void;
@@ -36,8 +37,6 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
   // Estados do formulário
   const [formData, setFormData] = useState({
     nome: '',
-    senha: '',
-    confirmarSenha: '',
     endereco: '',
     descricao: '',
     horarioFuncionamento: '',
@@ -51,6 +50,8 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
   const cpfHook = useCPF();
   const phoneHook = usePhone();
   const emailHook = useEmail();
+  const passwordHook = usePassword();
+  const passwordConfirmHook = usePasswordConfirm(passwordHook.value);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -66,9 +67,6 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
     const newErrors: Record<string, string> = {};
 
     if (!formData.nome.trim()) newErrors.nome = 'Nome é obrigatório';
-    if (!formData.senha) newErrors.senha = 'Senha é obrigatória';
-    if (formData.senha.length < 6) newErrors.senha = 'Senha deve ter no mínimo 6 caracteres';
-    if (formData.senha !== formData.confirmarSenha) newErrors.confirmarSenha = 'Senhas não coincidem';
     if (!formData.endereco.trim()) newErrors.endereco = 'Endereço é obrigatório';
     if (!formData.descricao.trim()) newErrors.descricao = 'Descrição é obrigatória';
     
@@ -85,6 +83,16 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
     // Validar e-mail
     if (!emailHook.validate()) {
       newErrors.email = emailHook.error;
+    }
+
+    // Validar senha
+    if (!passwordHook.validate()) {
+      newErrors.senha = passwordHook.errors[0] || 'Senha inválida';
+    }
+
+    // Validar confirmação de senha
+    if (!passwordConfirmHook.validate()) {
+      newErrors.confirmarSenha = passwordConfirmHook.error;
     }
 
     setErrors(newErrors);
@@ -109,7 +117,7 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
         body: JSON.stringify({
           nome: formData.nome,
           email: emailHook.value, // E-mail já validado e formatado
-          senha: formData.senha,
+          senha: passwordHook.value,
           telefone: phoneHook.value.replace(/\D/g, ''), // Enviar telefone sem formatação
           endereco: formData.endereco,
           descricao: formData.descricao,
@@ -204,36 +212,109 @@ const RegisterProviderModal: React.FC<RegisterProviderModalProps> = ({ onClose }
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Senha *
-                </label>
-                <Input
-                  type="password"
-                  value={formData.senha}
-                  onChange={(e) => handleInputChange('senha', e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
-                  className={errors.senha ? 'border-destructive' : ''}
-                  disabled={isLoading}
-                />
-                {errors.senha && <p className="text-sm text-destructive mt-1">{errors.senha}</p>}
-              </div>
+            {/* Senha */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Senha *
+              </label>
+              <Input
+                type="password"
+                value={passwordHook.value}
+                onChange={(e) => passwordHook.handleChange(e.target.value)}
+                placeholder="Mínimo 8 caracteres com maiúscula, minúscula, número e símbolo"
+                className={errors.senha ? 'border-destructive' : ''}
+                disabled={isLoading}
+              />
+              {errors.senha && <p className="text-sm text-destructive mt-1">{errors.senha}</p>}
+              
+              {/* Indicador de força da senha */}
+              {passwordHook.value && (
+                <div className="mt-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs text-muted-foreground">Força da senha:</span>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4].map((level) => (
+                        <div
+                          key={level}
+                          className={`h-1 w-4 rounded ${
+                            level <= passwordHook.strength.score
+                              ? passwordHook.strength.strength === 'weak'
+                                ? 'bg-red-500'
+                                : passwordHook.strength.strength === 'medium'
+                                ? 'bg-yellow-500'
+                                : passwordHook.strength.strength === 'strong'
+                                ? 'bg-blue-500'
+                                : 'bg-green-500'
+                              : 'bg-gray-200'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className={`text-xs font-medium ${
+                      passwordHook.strength.strength === 'weak'
+                        ? 'text-red-500'
+                        : passwordHook.strength.strength === 'medium'
+                        ? 'text-yellow-500'
+                        : passwordHook.strength.strength === 'strong'
+                        ? 'text-blue-500'
+                        : 'text-green-500'
+                    }`}>
+                      {passwordHook.strength.strength === 'weak' && 'Fraca'}
+                      {passwordHook.strength.strength === 'medium' && 'Média'}
+                      {passwordHook.strength.strength === 'strong' && 'Forte'}
+                      {passwordHook.strength.strength === 'very-strong' && 'Muito Forte'}
+                    </span>
+                  </div>
+                  
+                  {/* Lista de requisitos */}
+                  {passwordHook.errors.length > 0 && (
+                    <div className="text-xs text-muted-foreground">
+                      <p className="font-medium mb-1">Requisitos:</p>
+                      <ul className="space-y-1">
+                        {passwordHook.errors.map((error, index) => (
+                          <li key={index} className="flex items-center gap-1">
+                            <span className="text-red-500">✗</span>
+                            {error}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Confirmar Senha *
-                </label>
-                <Input
-                  type="password"
-                  value={formData.confirmarSenha}
-                  onChange={(e) => handleInputChange('confirmarSenha', e.target.value)}
-                  placeholder="Confirme sua senha"
-                  className={errors.confirmarSenha ? 'border-destructive' : ''}
-                  disabled={isLoading}
-                />
-                {errors.confirmarSenha && <p className="text-sm text-destructive mt-1">{errors.confirmarSenha}</p>}
-              </div>
+            {/* Confirmar Senha */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Confirmar Senha *
+              </label>
+              <Input
+                type="password"
+                value={passwordConfirmHook.value}
+                onChange={(e) => passwordConfirmHook.handleChange(e.target.value)}
+                placeholder="Digite a senha novamente"
+                className={errors.confirmarSenha ? 'border-destructive' : ''}
+                disabled={isLoading}
+              />
+              {errors.confirmarSenha && <p className="text-sm text-destructive mt-1">{errors.confirmarSenha}</p>}
+              
+              {/* Indicador de correspondência */}
+              {passwordConfirmHook.value && (
+                <div className="mt-1">
+                  {passwordConfirmHook.isValid ? (
+                    <p className="text-xs text-green-600 flex items-center gap-1">
+                      <span>✓</span>
+                      As senhas coincidem
+                    </p>
+                  ) : (
+                    <p className="text-xs text-red-600 flex items-center gap-1">
+                      <span>✗</span>
+                      As senhas não coincidem
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* CPF */}
